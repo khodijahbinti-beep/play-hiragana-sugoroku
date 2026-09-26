@@ -167,6 +167,7 @@ const SPECIAL_LABEL = {bonus:'⭐ BONUS',kesempatan:'🎁 KESEMPATAN',mundur:'�
 
 /* ============ RULES ============ */
 function showRules(){
+  soundClick();
   document.getElementById('modalContent').innerHTML = `
     <h3 style="color:var(--pink-deep);">📖 Aturan Main HIRAGANA SUGOROKU</h3>
     <div style="text-align:left;font-size:.95rem;line-height:1.6;max-height:60vh;overflow-y:auto;">
@@ -229,10 +230,11 @@ document.addEventListener('click', function firstClick(){ startBGM(); document.r
 /* ============ NAV ============ */
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function goToSetup(){
+  soundClick();
   const wrap=document.getElementById('groupChoices'); wrap.innerHTML='';
   for(let n=2;n<=10;n++){
     const c=document.createElement('div'); c.className='chip'; c.textContent=n;
-    c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));c.classList.add('selected');numGroups=n;document.getElementById('startGameBtn').disabled=false;};
+    c.onclick=()=>{soundClick();document.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));c.classList.add('selected');numGroups=n;document.getElementById('startGameBtn').disabled=false;};
     wrap.appendChild(c);
   }
   showScreen('setupScreen');
