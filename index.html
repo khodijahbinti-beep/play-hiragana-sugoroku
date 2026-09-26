@@ -82,6 +82,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
   <p class="romaji-line">「Hiragana o Geemu de Oboeyou!」</p>
   <p class="tagline">Ayo belajar hiragana lewat game!</p>
   <button class="btn-main" onclick="goToSetup()">▶ Sutaato</button>
+  <button class="btn-secondary" onclick="showRules()">📖 Aturan Main</button>
 </div>
 
 <div id="setupScreen" class="screen">
@@ -164,6 +165,28 @@ const DECOR = ['🌸','☁️','⛩️','🗻','🌞','🍡'];
 const SPECIALS = {3:'bonus',5:'istirahat',7:'challenge',9:'kesempatan',11:'challenge',13:'mundur',
   15:'challenge',17:'ulangi',19:'challenge',21:'challenge'};
 const SPECIAL_LABEL = {bonus:'⭐ BONUS',kesempatan:'🎁 KESEMPATAN',mundur:'⏪ MUNDUR',ulangi:'🔄 ULANGI',istirahat:'😴 ISTIRAHAT'};
+
+/* ============ RULES ============ */
+function showRules(){
+  document.getElementById('modalContent').innerHTML = `
+    <h3 style="color:var(--pink-deep);">📖 Aturan Main HIRAGANA SUGOROKU</h3>
+    <div style="text-align:left;font-size:.95rem;line-height:1.6;max-height:60vh;overflow-y:auto;">
+      <p><b>1. Pemain</b><br>Kelas dibagi menjadi 2–10 kelompok. Setiap kelompok punya bidak dengan warna/nomor sendiri.</p>
+      <p><b>2. Cara Main</b><br>Tekan tombol <b>🎲 LEMPAR DADU</b> saat giliran kelompokmu. Bidak akan otomatis maju sesuai angka dadu, lalu giliran berpindah ke kelompok berikutnya.</p>
+      <p><b>3. Kotak Tantangan (❓)</b><br>Jika bidak berhenti di kotak ini, kelompok akan diberi 1 soal hiragana secara acak (Membaca Kata, Tebak Hiragana, Cocokkan, Dengarkan, atau Tulis), dengan waktu 60 detik. Jawaban benar mendapat <b>+10 poin</b>.</p>
+      <p><b>4. Kotak Khusus</b><br>
+      ⭐ BONUS: maju 2 langkah<br>
+      🎁 KESEMPATAN: lempar dadu sekali lagi<br>
+      ⏪ MUNDUR: mundur 2 langkah<br>
+      🔄 ULANGI: main sekali lagi<br>
+      😴 ISTIRAHAT: giliran berikutnya kelompok ini dilewati</p>
+      <p><b>5. Menang</b><br>Kelompok pertama yang mencapai kotak GOAL adalah pemenangnya, tidak peduli skor poinnya. Skor poin hanya untuk melihat siapa yang paling jago menjawab soal hiragana selama permainan.</p>
+      <p><b>6. Tombol "Tsugi!"</b><br>Selalu tekan tombol ini setelah selesai membaca hasil kotak khusus atau soal, untuk lanjut ke giliran berikutnya.</p>
+    </div>
+    <button class="btn-secondary" onclick="closeModalOnly()">Tsugi!</button>`;
+  document.getElementById('modalBg').classList.add('active');
+}
+function closeModalOnly(){ document.getElementById('modalBg').classList.remove('active'); }
 
 /* ============ NAV ============ */
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
