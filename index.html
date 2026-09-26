@@ -47,9 +47,9 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .cell.type-istirahat{background:#f0e9f6;}
 .cell.start,.cell.goal{background:var(--pink-deep);color:#fff;font-weight:700;font-size:.75rem;border-color:var(--pink-deep);}
 .cell .icon{font-size:1rem;}
-.badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:.55rem;font-weight:700;color:var(--blue);white-space:nowrap;}
-.pieces{position:absolute;top:-10px;display:flex;gap:2px;flex-wrap:wrap;justify-content:center;width:100%;}
-.token{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:#fff;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.4);}
+.badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:.72rem;font-weight:900;color:var(--blue);white-space:nowrap;}
+.pieces{position:absolute;top:-12px;display:flex;gap:3px;flex-wrap:wrap;justify-content:center;width:100%;}
+.token{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:900;color:#fff;box-shadow:0 1px 3px rgba(0,0,0,.4);transition:transform .15s;}
 .controls{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:4px;}
 #diceBtn{background:var(--gold);color:#fff;font-size:1.3rem;padding:14px 32px;border-radius:16px;box-shadow:0 5px 0 #a97b21;}
 #diceBtn:active{transform:translateY(3px);box-shadow:0 2px 0 #a97b21;}
@@ -66,7 +66,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .opt-btn.correct{background:#d9f0d9;border-color:#5aa85a;}
 .opt-btn.wrong{background:#f6d9d9;border-color:#b85555;}
 .feedback{font-size:1.35rem;font-weight:700;margin:8px 0;min-height:1.7rem;}
-#specialBanner{font-size:1.4rem;font-weight:700;color:var(--pink-deep);margin:14px 0;}
+#specialBanner{font-size:1.6rem;font-weight:900;color:var(--pink-deep);margin:14px 0;}
 .write-input{font-size:1.3rem;padding:10px 16px;border:2px solid var(--line);border-radius:10px;width:70%;margin:10px 0;text-align:center;}
 .teacher-check{display:flex;gap:10px;justify-content:center;margin-top:10px;}
 .btn-ok{background:#5aa85a;color:#fff;padding:10px 20px;border-radius:10px;font-size:1rem;}
@@ -269,12 +269,30 @@ function rollDice(){
 }
 function movePiece(steps){
   const team=teams[currentTurn];
-  team.pos=Math.min(team.pos+steps, NUM_SQUARES);
-  placePieces();
-  setTimeout(()=>{
-    if(team.pos>=NUM_SQUARES){ endGame(team); return; }
-    resolveSquare(boardMeta[team.pos-1], team);
-  },350);
+  let remaining=steps;
+  function stepMove(){
+    if(remaining<=0){
+      setTimeout(()=>{
+        if(team.pos>=NUM_SQUARES){ endGame(team); return; }
+        resolveSquare(boardMeta[team.pos-1], team);
+      },200);
+      return;
+    }
+    team.pos=Math.min(team.pos+1, NUM_SQUARES);
+    placePieces();
+    bouncePiece(team);
+    remaining--;
+    if(team.pos>=NUM_SQUARES){ setTimeout(()=>{ endGame(team); },400); return; }
+    setTimeout(stepMove,380);
+  }
+  stepMove();
+}
+function bouncePiece(team){
+  const id = team.pos<=0?'pieces-start':(team.pos>=NUM_SQUARES?'pieces-goal':'pieces-'+team.pos);
+  const el=document.getElementById(id); if(!el) return;
+  const tok=el.querySelector('.token'); if(!tok) return;
+  tok.style.transform='scale(1.5)';
+  setTimeout(()=>{ tok.style.transform='scale(1)'; },150);
 }
 function resolveSquare(sq, team){
   if(sq.type==='challenge'){ openChallenge(team); }
