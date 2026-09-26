@@ -113,50 +113,33 @@ button{font-family:inherit;cursor:pointer;border:none;}
 
 <script>
 /* ============ DATA ============ */
-const KANA = [
- {k:'あ',r:'a'},{k:'い',r:'i'},{k:'う',r:'u'},{k:'え',r:'e'},{k:'お',r:'o'},
- {k:'か',r:'ka'},{k:'き',r:'ki'},{k:'く',r:'ku'},{k:'け',r:'ke'},{k:'こ',r:'ko'},
- {k:'さ',r:'sa'},{k:'し',r:'shi'},{k:'す',r:'su'},{k:'せ',r:'se'},{k:'そ',r:'so'},
- {k:'た',r:'ta'},{k:'ち',r:'chi'},{k:'つ',r:'tsu'},{k:'て',r:'te'},{k:'と',r:'to'},
- {k:'な',r:'na'},{k:'に',r:'ni'},{k:'ぬ',r:'nu'},{k:'ね',r:'ne'},{k:'の',r:'no'},
- {k:'は',r:'ha'},{k:'ひ',r:'hi'},{k:'ふ',r:'fu'},{k:'へ',r:'he'},{k:'ほ',r:'ho'},
- {k:'ま',r:'ma'},{k:'み',r:'mi'},{k:'む',r:'mu'},{k:'め',r:'me'},{k:'も',r:'mo'},
- {k:'や',r:'ya'},{k:'ゆ',r:'yu'},{k:'よ',r:'yo'},
- {k:'ら',r:'ra'},{k:'り',r:'ri'},{k:'る',r:'ru'},{k:'れ',r:'re'},{k:'ろ',r:'ro'},
- {k:'わ',r:'wa'},{k:'を',r:'wo'},{k:'ん',r:'n'},
- {k:'が',r:'ga'},{k:'ぎ',r:'gi'},{k:'ぐ',r:'gu'},{k:'げ',r:'ge'},{k:'ご',r:'go'},
- {k:'ざ',r:'za'},{k:'じ',r:'ji'},{k:'ず',r:'zu'},{k:'ぜ',r:'ze'},{k:'ぞ',r:'zo'},
- {k:'だ',r:'da'},{k:'ぢ',r:'ji'},{k:'づ',r:'zu'},{k:'で',r:'de'},{k:'ど',r:'do'},
- {k:'ば',r:'ba'},{k:'び',r:'bi'},{k:'ぶ',r:'bu'},{k:'べ',r:'be'},{k:'ぼ',r:'bo'},
- {k:'ぱ',r:'pa'},{k:'ぴ',r:'pi'},{k:'ぷ',r:'pu'},{k:'ぺ',r:'pe'},{k:'ぽ',r:'po'},
- {k:'きゃ',r:'kya'},{k:'きゅ',r:'kyu'},{k:'きょ',r:'kyo'},
- {k:'しゃ',r:'sha'},{k:'しゅ',r:'shu'},{k:'しょ',r:'sho'},
- {k:'ちゃ',r:'cha'},{k:'ちゅ',r:'chu'},{k:'ちょ',r:'cho'},
- {k:'にゃ',r:'nya'},{k:'にゅ',r:'nyu'},{k:'にょ',r:'nyo'},
- {k:'ひゃ',r:'hya'},{k:'ひゅ',r:'hyu'},{k:'ひょ',r:'hyo'},
- {k:'みゃ',r:'mya'},{k:'みゅ',r:'myu'},{k:'みょ',r:'myo'},
- {k:'りゃ',r:'rya'},{k:'りゅ',r:'ryu'},{k:'りょ',r:'ryo'},
- {k:'ぎゃ',r:'gya'},{k:'ぎゅ',r:'gyu'},{k:'ぎょ',r:'gyo'},
- {k:'じゃ',r:'ja'},{k:'じゅ',r:'ju'},{k:'じょ',r:'jo'},
- {k:'びゃ',r:'bya'},{k:'びゅ',r:'byu'},{k:'びょ',r:'byo'},
- {k:'ぴゃ',r:'pya'},{k:'ぴゅ',r:'pyu'},{k:'ぴょ',r:'pyo'}
-];
+/* Semua soal pakai KOSAKATA (bukan huruf satuan), supaya lebih menarik & bervariasi */
 const WORDS = [
- {k:'ねこ',r:'neko'},{k:'さくら',r:'sakura'},{k:'いぬ',r:'inu'},
- {k:'たまご',r:'tamago'},{k:'すし',r:'sushi'},{k:'とり',r:'tori'}
+ {k:'ねこ',r:'neko'},{k:'いぬ',r:'inu'},{k:'とり',r:'tori'},{k:'さかな',r:'sakana'},
+ {k:'うさぎ',r:'usagi'},{k:'ぞう',r:'zou'},{k:'さくら',r:'sakura'},{k:'やま',r:'yama'},
+ {k:'そら',r:'sora'},{k:'はな',r:'hana'},{k:'くも',r:'kumo'},{k:'みず',r:'mizu'},
+ {k:'たまご',r:'tamago'},{k:'すし',r:'sushi'},{k:'ごはん',r:'gohan'},{k:'りんご',r:'ringo'},
+ {k:'みかん',r:'mikan'},{k:'がっこう',r:'gakkou'},{k:'せんせい',r:'sensei'},{k:'ともだち',r:'tomodachi'},
+ {k:'あか',r:'aka'},{k:'あお',r:'ao'},{k:'きいろ',r:'kiiro'},{k:'しろ',r:'shiro'},{k:'くろ',r:'kuro'},
+ {k:'いち',r:'ichi'},{k:'さん',r:'san'},{k:'よん',r:'yon'},
+ {k:'おはよう',r:'ohayou'},{k:'こんにちは',r:'konnichiwa'},{k:'ありがとう',r:'arigatou'},{k:'さようなら',r:'sayounara'},
+ {k:'たべる',r:'taberu'},{k:'のむ',r:'nomu'},{k:'みる',r:'miru'},{k:'いく',r:'iku'},{k:'ねる',r:'neru'}
 ];
-const LISTEN_BANK = [
- {audio:'neko', correct:'ねこ', options:['ねこ','れこ','ねご','れご']},
- {audio:'sakura', correct:'さくら', options:['さくら','さらく','さくろ','しくら']},
- {audio:'inu', correct:'いぬ', options:['いぬ','いね','にぬ','いめ']},
- {audio:'tori', correct:'とり', options:['とり','とい','こり','どり']}
-];
-const MATCH_BANK = [
- {k:'さくら', correct:'sakura', options:['sakura','sakora','sekura','sakurae']},
- {k:'き', correct:'ki', options:['ki','ke','ku','ko']},
- {k:'ねこ', correct:'neko', options:['neko','nuko','nako','niko']},
- {k:'いぬ', correct:'inu', options:['inu','ine','uni','ini']}
-];
+/* Khusus tipe "Tebak Hiragana": hanya 3 soal (sesuai permintaan) */
+const TEBAK_POOL = [ {k:'ねこ',r:'neko'}, {k:'さくら',r:'sakura'}, {k:'ありがとう',r:'arigatou'} ];
+/* Pelacak soal yang sudah keluar, supaya tidak ada soal sama berulang dalam 1 sesi permainan */
+let usedWords = new Set();
+let usedTebak = new Set();
+function pickWord(){
+  let avail = WORDS.filter(w=>!usedWords.has(w.r));
+  if(avail.length===0){ usedWords.clear(); avail = WORDS; }
+  const w = rnd(avail); usedWords.add(w.r); return w;
+}
+function pickTebak(){
+  let avail = TEBAK_POOL.filter(w=>!usedTebak.has(w.r));
+  if(avail.length===0){ usedTebak.clear(); avail = TEBAK_POOL; }
+  const w = rnd(avail); usedTebak.add(w.r); return w;
+}
 
 const NUM_SQUARES = 24;
 const COLS = 6;
@@ -256,6 +239,7 @@ function placePieces(){
 /* ============ GAME START ============ */
 function startGame(){
   buildBoardMeta();
+  usedWords = new Set(); usedTebak = new Set();
   teams=[];
   for(let i=0;i<numGroups;i++) teams.push({id:i,name:'Tim '+(i+1),pos:0,score:0,color:TEAM_COLORS[i%TEAM_COLORS.length],skip:false});
   currentTurn=0;
@@ -327,32 +311,36 @@ function openChallenge(team){
   const modal=document.getElementById('modalContent'); window.currentChallengeTeam=team; window.answered=false;
   let html='';
   if(type==='baca'){
-    const pool = Math.random()<0.5 ? WORDS : KANA; const item=rnd(pool);
-    const wrongs=shuffle(pool.filter(x=>x.r!==item.r)).slice(0,3).map(x=>x.r);
+    const item=pickWord();
+    const wrongs=shuffle(WORDS.filter(x=>x.r!==item.r)).slice(0,3).map(x=>x.r);
     const opts=shuffle([item.r,...wrongs]);
     html=`<h3>Membaca Kata</h3><div class="timer-box" id="timerText">⏱ 60 detik</div><p>Pilih romaji yang benar:</p><div class="prompt-jp">${item.k}</div>
       <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="checkAnswer(this,'${o}','${item.r}')">${o}</button>`).join('')}</div>
       <div class="feedback" id="fb"></div><button class="btn-secondary hidden" id="nextBtn" onclick="closeChallenge()">Tsugi!</button>`;
   } else if(type==='tebak'){
-    const pool = Math.random()<0.5 ? WORDS : KANA; const item=rnd(pool);
-    const wrongs=shuffle(pool.filter(x=>x.k!==item.k)).slice(0,3).map(x=>x.k);
+    const item=pickTebak();
+    const wrongs=shuffle(WORDS.filter(x=>x.k!==item.k)).slice(0,3).map(x=>x.k);
     const opts=shuffle([item.k,...wrongs]);
     html=`<h3>Tebak Hiragana</h3><div class="timer-box" id="timerText">⏱ 60 detik</div><p>Pilih hiragana yang sesuai untuk:</p><div class="prompt-jp" style="font-size:2.2rem;">${item.r}</div>
-      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="checkAnswer(this,'${o}','${item.k}')" style="font-size:1.6rem;">${o}</button>`).join('')}</div>
+      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="checkAnswer(this,'${o}','${item.k}')" style="font-size:1.5rem;">${o}</button>`).join('')}</div>
       <div class="feedback" id="fb"></div><button class="btn-secondary hidden" id="nextBtn" onclick="closeChallenge()">Tsugi!</button>`;
   } else if(type==='cocok'){
-    const item=rnd(MATCH_BANK); const opts=shuffle(item.options);
+    const item=pickWord();
+    const wrongs=shuffle(WORDS.filter(x=>x.r!==item.r)).slice(0,3).map(x=>x.r);
+    const opts=shuffle([item.r,...wrongs]);
     html=`<h3>Cocokkan</h3><div class="timer-box" id="timerText">⏱ 60 detik</div><p>Cocokkan dengan romaji yang tepat:</p><div class="prompt-jp">${item.k}</div>
-      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="checkAnswer(this,'${o}','${item.correct}')">${o}</button>`).join('')}</div>
+      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="checkAnswer(this,'${o}','${item.r}')">${o}</button>`).join('')}</div>
       <div class="feedback" id="fb"></div><button class="btn-secondary hidden" id="nextBtn" onclick="closeChallenge()">Tsugi!</button>`;
   } else if(type==='dengar'){
-    const item=rnd(LISTEN_BANK); const opts=shuffle(item.options);
+    const item=pickWord();
+    const wrongs=shuffle(WORDS.filter(x=>x.k!==item.k)).slice(0,3).map(x=>x.k);
+    const opts=shuffle([item.k,...wrongs]);
     html=`<h3>Dengarkan</h3><div class="timer-box" id="timerText">⏱ 60 detik</div><p>Dengarkan audio, lalu pilih hiragana yang sesuai:</p>
-      <button class="btn-secondary" onclick="speakWord('${item.audio}')">🔊 Putar Audio</button>
-      <div class="options" style="margin-top:14px;">${opts.map(o=>`<button class="opt-btn" onclick="checkAnswer(this,'${o}','${item.correct}')" style="font-size:1.6rem;">${o}</button>`).join('')}</div>
+      <button class="btn-secondary" onclick="speakWord('${item.r}')">🔊 Putar Audio</button>
+      <div class="options" style="margin-top:14px;">${opts.map(o=>`<button class="opt-btn" onclick="checkAnswer(this,'${o}','${item.k}')" style="font-size:1.5rem;">${o}</button>`).join('')}</div>
       <div class="feedback" id="fb"></div><button class="btn-secondary hidden" id="nextBtn" onclick="closeChallenge()">Tsugi!</button>`;
   } else {
-    const item=rnd(WORDS);
+    const item=pickWord();
     html=`<h3>Tulis</h3><div class="timer-box" id="timerText">⏱ 60 detik</div><p>Tulis romaji yang benar di kertas/papan!</p><div class="prompt-jp">${item.k}</div>
       <input class="write-input" id="writeInput" placeholder="tulis di kertas..." disabled>
       <p style="color:#8a8272;font-size:.85rem;">Guru yang memeriksa jawaban siswa secara langsung.</p>
