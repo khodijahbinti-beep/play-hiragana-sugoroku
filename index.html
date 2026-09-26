@@ -211,6 +211,20 @@ function soundMundur(){ beep(392,150,'sawtooth',0.16); beep(294,220,'sawtooth',0
 function soundUlangi(){ beep(523,90,'square',0.15); beep(523,90,'square',0.15,140); beep(523,90,'square',0.15,280); }
 function soundIstirahat(){ beep(330,350,'sine',0.14); }
 function soundWin(){ beep(660,140,'triangle',0.22); beep(880,140,'triangle',0.22,140); beep(1046,220,'triangle',0.22,280); }
+function soundCorrect(){ beep(784,110,'triangle',0.22); beep(988,110,'triangle',0.22,100); beep(1318,180,'triangle',0.22,200); }
+function soundWrong(){ beep(311,180,'sawtooth',0.18); beep(233,260,'sawtooth',0.18,150); }
+function soundClick(){ beep(700,55,'square',0.12); }
+
+/* ============ MUSIK LATAR (halaman awal & menunggu) ============ */
+let bgmInterval=null, bgmStep=0;
+const BGM_NOTES=[523,587,659,523,494,440,494,392,440,523,587,494];
+function startBGM(){
+  if(bgmInterval) return;
+  bgmStep=0;
+  bgmInterval=setInterval(()=>{ beep(BGM_NOTES[bgmStep%BGM_NOTES.length],400,'sine',0.045); bgmStep++; },460);
+}
+function stopBGM(){ if(bgmInterval){ clearInterval(bgmInterval); bgmInterval=null; } }
+document.addEventListener('click', function firstClick(){ startBGM(); document.removeEventListener('click', firstClick); }, {once:true});
 
 /* ============ NAV ============ */
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
@@ -410,7 +424,7 @@ function openChallenge(team){
   modal.innerHTML=html;
   document.getElementById('modalBg').classList.add('active');
   if(type!=='tulis'){
-    startTimer(()=>{ if(!window.answered){ window.answered=true; document.getElementById('fb').textContent='Waktu habis! ⏱'; document.getElementById('fb').style.color='#a83a3a'; document.getElementById('nextBtn').classList.remove('hidden'); } });
+    startTimer(()=>{ if(!window.answered){ window.answered=true; soundWrong(); document.getElementById('fb').textContent='Waktu habis! ⏱'; document.getElementById('fb').style.color='#a83a3a'; document.getElementById('nextBtn').classList.remove('hidden'); } });
   } else {
     startTimer(()=>{ if(document.getElementById('timerText')) document.getElementById('timerText').textContent='⏰ Waktu habis'; });
   }
@@ -424,6 +438,7 @@ function speakWord(word){
 function checkAnswer(btn, chosen, correct){
   if(window.answered) return; window.answered=true; if(qTimer) clearInterval(qTimer);
   const ok = chosen===correct;
+  if(ok) soundCorrect(); else soundWrong();
   document.querySelectorAll('.opt-btn').forEach(b=>{ if(b.textContent===correct) b.classList.add('correct'); if(b===btn && !ok) b.classList.add('wrong'); });
   if(ok){ window.currentChallengeTeam.score+=10; renderHud(); }
   const fb=document.getElementById('fb');
@@ -433,6 +448,7 @@ function checkAnswer(btn, chosen, correct){
 }
 function teacherGrade(correct){
   if(window.answered) return; window.answered=true; if(qTimer) clearInterval(qTimer);
+  if(correct) soundCorrect(); else soundWrong();
   if(correct){ window.currentChallengeTeam.score+=10; renderHud(); }
   const fb=document.getElementById('fb');
   fb.textContent = correct ? 'Seikai! 🎉 +10 poin (dinilai guru)' : 'Zannen! ❌ (dinilai guru)';
