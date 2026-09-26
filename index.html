@@ -2,1884 +2,369 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ひらがなすごろく - Hiragana Sugoroku</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ひらがなすごろく | HIRAGANA SUGOROKU</title>
 <style>
-*{box-sizing:border-box}
-
-body{
-    margin:0;
-    font-family:Arial,"Noto Sans JP",sans-serif;
-    background:#fdf5f7;
-    color:#303030;
-}
-
-button{
-    font-family:inherit;
-    cursor:pointer;
-}
-
-.page{
-    display:none;
-    min-height:100vh;
-}
-
-.page.active{
-    display:flex;
-}
-
-/* ================= COVER ================= */
-
-#cover{
-    justify-content:center;
-    align-items:center;
-    text-align:center;
-    background:
-        radial-gradient(circle at 10% 15%,#ffdce7 0 5%,transparent 6%),
-        radial-gradient(circle at 90% 20%,#dceeff 0 5%,transparent 6%),
-        linear-gradient(135deg,#fff7f9,#eef7ff);
-    padding:25px;
-}
-
-.cover-box{
-    width:min(800px,95%);
-    background:white;
-    border-radius:32px;
-    padding:55px 30px;
-    box-shadow:0 15px 40px rgba(0,0,0,.12);
-}
-
-.decor{
-    font-size:45px;
-}
-
-.cover-title{
-    font-size:clamp(42px,8vw,78px);
-    color:#d45b7b;
-    font-weight:800;
-    margin:15px 0 5px;
-}
-
-.cover-subtitle{
-    font-size:clamp(20px,4vw,30px);
-    letter-spacing:3px;
-    color:#555;
-}
-
-.cover-tagline{
-    font-size:22px;
-    margin:25px 0 35px;
-}
-
-.primary{
-    background:#d45b7b;
-    color:white;
-    border:0;
-    border-radius:15px;
-    padding:15px 40px;
-    font-size:22px;
-    font-weight:bold;
-    box-shadow:0 5px 0 #ad4561;
-}
-
-.primary:active{
-    transform:translateY(3px);
-    box-shadow:0 2px 0 #ad4561;
-}
-
-/* ================= RULES ================= */
-
-#rules{
-    justify-content:center;
-    align-items:center;
-    padding:25px;
-}
-
-.rules-box{
-    width:min(800px,95%);
-    background:white;
-    border-radius:25px;
-    padding:35px;
-    box-shadow:0 10px 35px rgba(0,0,0,.1);
-}
-
-.section-title{
-    color:#d45b7b;
-    text-align:center;
-    font-size:34px;
-    margin-top:0;
-}
-
-.rules-list{
-    padding-left:25px;
-    line-height:1.8;
-    font-size:18px;
-}
-
-.rules-note{
-    background:#fff3d5;
-    border-left:5px solid #e4b84e;
-    padding:15px;
-    border-radius:10px;
-    margin:20px 0;
-}
-
-.rules-buttons{
-    text-align:center;
-    margin-top:25px;
-}
-
-/* ================= SETUP ================= */
-
-#setup{
-    justify-content:center;
-    align-items:center;
-    padding:25px;
-}
-
-.setup-box{
-    width:min(800px,95%);
-    background:white;
-    border-radius:25px;
-    padding:35px;
-    text-align:center;
-    box-shadow:0 10px 35px rgba(0,0,0,.1);
-}
-
-.team-grid{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:10px;
-    margin:25px 0;
-}
-
-.team-select{
-    border:3px solid #e5e5e5;
-    background:#fafafa;
-    border-radius:13px;
-    padding:15px 5px;
-    font-size:17px;
-    font-weight:bold;
-}
-
-.team-select:hover,
-.team-select.selected{
-    border-color:#d45b7b;
-    background:#ffe6ed;
-}
-
-#startGame{
-    background:#5c84bd;
-    color:white;
-    padding:15px 35px;
-    border-radius:14px;
-    font-size:21px;
-    font-weight:bold;
-}
-
-#startGame:disabled{
-    opacity:.4;
-    cursor:not-allowed;
-}
-
-/* ================= GAME ================= */
-
-#game{
-    flex-direction:column;
-    padding:12px;
-    background:#f7f9fc;
-}
-
-.topbar{
-    background:white;
-    border-radius:16px;
-    padding:12px 16px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-    margin-bottom:12px;
-}
-
-.current-turn{
-    text-align:center;
-    font-size:24px;
-    font-weight:bold;
-    color:#d45b7b;
-    margin-bottom:10px;
-}
-
-.score-row{
-    display:flex;
-    gap:6px;
-    flex-wrap:wrap;
-    justify-content:center;
-}
-
-.score-item{
-    background:#f1f1f1;
-    border-radius:8px;
-    padding:7px 10px;
-    font-size:13px;
-    font-weight:bold;
-}
-
-.score-item.active-team{
-    outline:3px solid #d45b7b;
-    background:#ffe6ed;
-}
-
-.game-main{
-    display:grid;
-    grid-template-columns:minmax(0,2fr) minmax(300px,1fr);
-    gap:12px;
-    flex:1;
-}
-
-.board-wrap{
-    background:white;
-    border-radius:20px;
-    padding:15px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-}
-
-.board-heading{
-    text-align:center;
-    font-weight:bold;
-    color:#777;
-    margin-bottom:10px;
-}
-
-.board{
-    display:grid;
-    grid-template-columns:repeat(6,1fr);
-    gap:6px;
-}
-
-.cell{
-    min-height:78px;
-    border:2px solid #dedede;
-    border-radius:10px;
-    background:white;
-    position:relative;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
-    text-align:center;
-}
-
-.cell-number{
-    position:absolute;
-    top:3px;
-    left:5px;
-    color:#999;
-    font-size:11px;
-}
-
-.cell.normal::after{
-    content:"🌸";
-    font-size:22px;
-}
-
-.cell.start{
-    background:#e7f6e7;
-    border-color:#70ad70;
-}
-
-.cell.goal{
-    background:#ffe0e9;
-    border-color:#d45b7b;
-}
-
-.cell.special{
-    background:#fff2cf;
-    border-color:#dfb550;
-}
-
-.special-label{
-    font-size:11px;
-    font-weight:bold;
-    margin-top:3px;
-}
-
-.pawns{
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:1px;
-    margin-top:3px;
-}
-
-.pawn{
-    font-size:19px;
-    line-height:20px;
-}
-
-/* ================= RIGHT PANEL ================= */
-
-.side{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
-
-.dice-box,
-.challenge-box{
-    background:white;
-    border-radius:20px;
-    padding:17px;
-    box-shadow:0 4px 15px rgba(0,0,0,.08);
-}
-
-.dice-box{
-    text-align:center;
-}
-
-.dice-label{
-    font-size:14px;
-    color:#777;
-    font-weight:bold;
-}
-
-.dice-face{
-    font-size:62px;
-    margin:5px;
-}
-
-.roll{
-    width:100%;
-    background:#5c84bd;
-    color:white;
-    border-radius:12px;
-    padding:13px;
-    font-size:21px;
-    font-weight:bold;
-}
-
-.roll:disabled{
-    opacity:.45;
-    cursor:not-allowed;
-}
-
-.challenge-box{
-    flex:1;
-    text-align:center;
-}
-
-.challenge-type{
-    display:inline-block;
-    background:#ffe2ea;
-    color:#c54e6d;
-    padding:6px 12px;
-    border-radius:20px;
-    font-size:12px;
-    font-weight:bold;
-    letter-spacing:1px;
-}
-
-.challenge-title{
-    font-size:20px;
-    font-weight:bold;
-    margin:12px 0;
-}
-
-.big-hira{
-    font-size:65px;
-    font-weight:bold;
-    margin:12px 0;
-}
-
-.choices{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-}
-
-.choice{
-    background:#fafafa;
-    border:2px solid #ddd;
-    border-radius:10px;
-    padding:11px 6px;
-    font-size:18px;
-    font-weight:bold;
-}
-
-.choice:hover{
-    background:#edf5ff;
-    border-color:#5c84bd;
-}
-
-.choice:disabled{
-    cursor:default;
-}
-
-.correct{
-    background:#e5f7e5 !important;
-    border-color:#65aa65 !important;
-}
-
-.wrong{
-    background:#ffe5e5 !important;
-    border-color:#d66 !important;
-}
-
-.feedback{
-    margin-top:12px;
-    font-size:20px;
-    font-weight:bold;
-}
-
-.answer-info{
-    margin:8px 0;
-    font-size:15px;
-}
-
-.next{
-    width:100%;
-    background:#d45b7b;
-    color:white;
-    border-radius:11px;
-    padding:12px;
-    font-size:18px;
-    font-weight:bold;
-    margin-top:8px;
-}
-
-/* ================= SUMMARY ================= */
-
-#summary{
-    justify-content:center;
-    align-items:center;
-    padding:25px;
-}
-
-.summary-box{
-    width:min(850px,95%);
-    background:white;
-    border-radius:25px;
-    padding:35px;
-    box-shadow:0 10px 35px rgba(0,0,0,.1);
-}
-
-.winner-banner{
-    text-align:center;
-    background:#fff2d0;
-    border-radius:18px;
-    padding:20px;
-    margin-bottom:20px;
-}
-
-.trophy{
-    font-size:60px;
-}
-
-.winner-banner h2{
-    color:#d45b7b;
-    margin:8px;
-    font-size:32px;
-}
-
-.summary-table{
-    width:100%;
-    border-collapse:collapse;
-    margin:20px 0;
-}
-
-.summary-table th,
-.summary-table td{
-    border:1px solid #ddd;
-    padding:10px;
-    text-align:center;
-}
-
-.summary-table th{
-    background:#f4e7eb;
-}
-
-.summary-buttons{
-    text-align:center;
-}
-
-/* ================= RESPONSIVE ================= */
-
-@media(max-width:900px){
-
-    .game-main{
-        grid-template-columns:1fr;
-    }
-
-    .team-grid{
-        grid-template-columns:repeat(3,1fr);
-    }
-
-    .board{
-        grid-template-columns:repeat(6,1fr);
-    }
-}
-
-@media(max-width:600px){
-
-    .team-grid{
-        grid-template-columns:repeat(2,1fr);
-    }
-
-    .board{
-        grid-template-columns:repeat(5,1fr);
-    }
-
-    .cell{
-        min-height:62px;
-    }
-
-    .pawn{
-        font-size:15px;
-    }
-}
+:root{
+  --cream:#faf3e8; --pink:#e88ca0; --pink-deep:#c9607a; --blue:#4a7ba6;
+  --ink:#2b2620; --line:#8a5a63; --gold:#d9a441;
+}
+*{box-sizing:border-box;}
+body{margin:0;font-family:'Hiragino Sans','Yu Gothic',"Segoe UI",sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;
+  background-image:radial-gradient(circle at 8% 12%,rgba(232,140,160,.18),transparent 40%),radial-gradient(circle at 92% 88%,rgba(74,123,166,.14),transparent 45%);}
+.screen{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;}
+.screen.active{display:flex;}
+h1.title-jp{font-size:clamp(2rem,6vw,3.6rem);color:var(--pink-deep);margin:0;}
+h2.title-en{font-size:clamp(.8rem,2.2vw,1.1rem);letter-spacing:.3em;color:var(--blue);margin:6px 0;}
+.romaji-line{font-size:1rem;color:#7a5a50;margin:4px 0;}
+.tagline{font-size:1.15rem;color:#5a5348;margin:14px 0 30px;}
+button{font-family:inherit;cursor:pointer;border:none;}
+.btn-main{background:var(--pink);color:#fff;font-size:1.25rem;padding:15px 42px;border-radius:40px;box-shadow:0 6px 0 var(--pink-deep);}
+.btn-main:active{transform:translateY(4px);box-shadow:0 2px 0 var(--pink-deep);}
+.btn-secondary{background:var(--blue);color:#fff;font-size:1rem;padding:12px 26px;border-radius:30px;box-shadow:0 4px 0 #2c5170;margin-top:14px;}
+.btn-secondary:active{transform:translateY(3px);box-shadow:0 1px 0 #2c5170;}
+.group-choices{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:520px;margin-bottom:22px;}
+.chip{padding:12px 18px;border-radius:14px;background:#fff;border:2px solid var(--line);font-size:1.1rem;min-width:50px;color:var(--pink-deep);font-weight:700;}
+.chip.selected{background:var(--pink-deep);color:#fff;border-color:var(--pink-deep);}
+#gameScreen{justify-content:flex-start;padding:10px;}
+.hud{width:100%;max-width:1000px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:8px;}
+.score-card{background:#fff;border-radius:12px;padding:7px 12px;border:2px solid var(--line);font-size:.85rem;min-width:110px;display:flex;align-items:center;gap:6px;}
+.score-card.active{border-color:var(--gold);background:#fff8e6;}
+.turn-banner{background:var(--pink-deep);color:#fff;padding:9px 22px;border-radius:22px;font-size:1.05rem;margin-bottom:10px;}
+#boardWrap{position:relative;width:100%;max-width:1000px;margin-bottom:12px;}
+#board{display:flex;flex-direction:column;gap:6px;}
+.row{display:flex;gap:6px;}
+.row.reverse{flex-direction:row-reverse;}
+.cell{flex:1;aspect-ratio:1/1;background:#fff;border:3px solid var(--line);border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;font-size:.65rem;color:#8a8272;min-width:0;}
+.cell .num{position:absolute;top:2px;left:6px;font-size:.5rem;color:#a89f8a;}
+.cell.type-challenge{background:#fdf0f2;}
+.cell.type-bonus{background:#fff6df;}
+.cell.type-kesempatan{background:#eef6ee;}
+.cell.type-mundur{background:#f3e9e9;}
+.cell.type-ulangi{background:#e9eef6;}
+.cell.type-istirahat{background:#f0e9f6;}
+.cell.start,.cell.goal{background:var(--pink-deep);color:#fff;font-weight:700;font-size:.75rem;border-color:var(--pink-deep);}
+.cell .icon{font-size:1rem;}
+.badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:.55rem;font-weight:700;color:var(--blue);white-space:nowrap;}
+.pieces{position:absolute;top:-10px;display:flex;gap:2px;flex-wrap:wrap;justify-content:center;width:100%;}
+.token{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:#fff;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.4);}
+.controls{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:4px;}
+#diceBtn{background:var(--gold);color:#fff;font-size:1.3rem;padding:14px 32px;border-radius:16px;box-shadow:0 5px 0 #a97b21;}
+#diceBtn:active{transform:translateY(3px);box-shadow:0 2px 0 #a97b21;}
+#diceBtn:disabled{opacity:.5;cursor:default;}
+#diceResult{font-size:1.8rem;margin-top:4px;min-height:2.2rem;}
+.modal-bg{position:fixed;inset:0;background:rgba(20,20,20,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:14px;}
+.modal-bg.active{display:flex;}
+.modal{background:#fff;border-radius:18px;padding:26px;max-width:520px;width:100%;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,.25);}
+.modal h3{color:var(--blue);margin-top:0;}
+.prompt-jp{font-size:3rem;color:var(--pink-deep);margin:8px 0;}
+.timer-box{font-size:1.1rem;color:var(--pink-deep);font-weight:700;margin-bottom:8px;}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;}
+.opt-btn{background:var(--cream);border:2px solid var(--line);border-radius:12px;padding:13px;font-size:1.1rem;color:var(--ink);}
+.opt-btn.correct{background:#d9f0d9;border-color:#5aa85a;}
+.opt-btn.wrong{background:#f6d9d9;border-color:#b85555;}
+.feedback{font-size:1.35rem;font-weight:700;margin:8px 0;min-height:1.7rem;}
+#specialBanner{font-size:1.4rem;font-weight:700;color:var(--pink-deep);margin:14px 0;}
+.write-input{font-size:1.3rem;padding:10px 16px;border:2px solid var(--line);border-radius:10px;width:70%;margin:10px 0;text-align:center;}
+.teacher-check{display:flex;gap:10px;justify-content:center;margin-top:10px;}
+.btn-ok{background:#5aa85a;color:#fff;padding:10px 20px;border-radius:10px;font-size:1rem;}
+.btn-no{background:#b85555;color:#fff;padding:10px 20px;border-radius:10px;font-size:1rem;}
+#winScreen h1{font-size:2.6rem;}
+.hidden{display:none !important;}
 </style>
 </head>
-
 <body>
 
-<!-- ==================================================
-     COVER
-================================================== -->
-
-<section id="cover" class="page active">
-
-    <div class="cover-box">
-
-        <div class="decor">
-            🌸 ⛩️ 🗻 🌸
-        </div>
-
-        <div class="cover-title">
-            ひらがなすごろく
-        </div>
-
-        <div class="cover-subtitle">
-            HIRAGANA SUGOROKU
-        </div>
-
-        <div class="cover-tagline">
-            ひらがなを たのしく おぼえよう！
-        </div>
-
-        <button class="primary" onclick="showPage('rules')">
-            ▶ はじめる
-        </button>
-
-    </div>
-
-</section>
-
-
-<!-- ==================================================
-     RULES
-================================================== -->
-
-<section id="rules" class="page">
-
-    <div class="rules-box">
-
-        <h2 class="section-title">
-            📖 CARA BERMAIN
-        </h2>
-
-        <ol class="rules-list">
-
-            <li>
-                Siswa dibagi menjadi beberapa kelompok.
-            </li>
-
-            <li>
-                Setiap kelompok memiliki satu bidak.
-            </li>
-
-            <li>
-                Kelompok bermain secara bergantian.
-            </li>
-
-            <li>
-                Klik tombol 🎲 DADU untuk mendapatkan angka 1–6.
-            </li>
-
-            <li>
-                Bidak bergerak sesuai angka dadu.
-            </li>
-
-            <li>
-                Setiap kotak memiliki tantangan yang berbeda.
-            </li>
-
-            <li>
-                Jika jawaban benar, kelompok mendapat <b>+10 poin</b>.
-            </li>
-
-            <li>
-                Jika jawaban salah, kelompok <b>mundur 1 kotak</b>.
-            </li>
-
-            <li>
-                Kotak khusus dapat memberikan bonus, mundur, atau kesempatan melempar dadu lagi.
-            </li>
-
-            <li>
-                Kelompok yang pertama mencapai <b>GOAL</b> menjadi pemenang.
-            </li>
-
-        </ol>
-
-        <div class="rules-note">
-            <b>💡 Catatan guru:</b><br>
-            Game dimainkan bersama menggunakan proyektor.
-            Guru atau perwakilan kelompok cukup mengklik tombol pada layar.
-            Siswa tidak perlu menggunakan HP.
-        </div>
-
-        <div style="text-align:center">
-
-            <button class="primary" onclick="showPage('setup')">
-                ▶ ゲームスタート
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ==================================================
-     SETUP
-================================================== -->
-
-<section id="setup" class="page">
-
-    <div class="setup-box">
-
-        <h2 class="section-title">
-            👥 PILIH JUMLAH KELOMPOK
-        </h2>
-
-        <p>
-            Pilih jumlah kelompok yang akan bermain.
-        </p>
-
-        <div class="team-grid">
-
-            <button class="team-select" onclick="selectTeam(2)">2 Kelompok</button>
-            <button class="team-select" onclick="selectTeam(3)">3 Kelompok</button>
-            <button class="team-select" onclick="selectTeam(4)">4 Kelompok</button>
-            <button class="team-select" onclick="selectTeam(5)">5 Kelompok</button>
-            <button class="team-select" onclick="selectTeam(6)">6 Kelompok</button>
-            <button class="team-select" onclick="selectTeam(7)">7 Kelompok</button>
-            <button class="team-select" onclick="selectTeam(8)">8 Kelompok</button>
-            <button class="team-select" onclick="selectTeam(9)">9 Kelompok</button>
-            <button class="team-select" onclick="selectTeam(10)">10 Kelompok</button>
-
-        </div>
-
-        <button id="startGame" onclick="startGame()" disabled>
-            ▶ MULAI PERMAINAN
-        </button>
-
-    </div>
-
-</section>
-
-
-<!-- ==================================================
-     GAME
-================================================== -->
-
-<section id="game" class="page">
-
-    <div class="topbar">
-
-        <div id="turn" class="current-turn">
-            Kelompok 1 mendapat giliran
-        </div>
-
-        <div id="scoreRow" class="score-row"></div>
-
-    </div>
-
-
-    <div class="game-main">
-
-        <!-- BOARD -->
-
-        <div class="board-wrap">
-
-            <div class="board-heading">
-                🌸 PAPAN HIRAGANA SUGOROKU 🌸
-            </div>
-
-            <div id="board" class="board"></div>
-
-        </div>
-
-
-        <!-- SIDE -->
-
-        <div class="side">
-
-            <div class="dice-box">
-
-                <div class="dice-label">
-                    GILIRAN DADU
-                </div>
-
-                <div id="diceFace" class="dice-face">
-                    🎲
-                </div>
-
-                <button
-                    id="rollButton"
-                    class="roll"
-                    onclick="rollDice()">
-
-                    🎲 DADU
-
-                </button>
-
-            </div>
-
-
-            <div id="challenge" class="challenge-box">
-
-                <div class="challenge-type">
-                    SIAP?
-                </div>
-
-                <div class="challenge-title">
-                    Klik tombol DADU untuk mulai.
-                </div>
-
-                <p>
-                    Setiap kotak akan memberikan tantangan berbeda.
-                </p>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- ==================================================
-     SUMMARY
-================================================== -->
-
-<section id="summary" class="page">
-
-    <div class="summary-box">
-
-        <div class="winner-banner">
-
-            <div class="trophy">
-                🏆
-            </div>
-
-            <h2>
-                おめでとうございます！
-            </h2>
-
-            <div id="winnerText"></div>
-
-            <p>
-                Selamat! Kamu berhasil menyelesaikan
-                <b>Hiragana Sugoroku</b>!
-            </p>
-
-        </div>
-
-
-        <h2 class="section-title">
-            📊 REKAP HASIL PERMAINAN
-        </h2>
-
-        <table class="summary-table">
-
-            <thead>
-
-                <tr>
-                    <th>Posisi</th>
-                    <th>Kelompok</th>
-                    <th>Poin</th>
-                    <th>Posisi Bidak</th>
-                </tr>
-
-            </thead>
-
-            <tbody id="summaryBody"></tbody>
-
-        </table>
-
-
-        <div class="summary-buttons">
-
-            <button class="primary" onclick="location.reload()">
-                🔄 もういちど あそぶ
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
+<div id="startScreen" class="screen active">
+  <h1 class="title-jp">「ひらがなすごろく」</h1>
+  <h2 class="title-en">HIRAGANA SUGOROKU</h2>
+  <p class="romaji-line">「Hiragana o Geemu de Oboeyou!」</p>
+  <p class="tagline">Ayo belajar hiragana lewat game!</p>
+  <button class="btn-main" onclick="goToSetup()">▶ Sutaato</button>
+</div>
+
+<div id="setupScreen" class="screen">
+  <h2 style="color:var(--pink-deep);">Pilih jumlah kelompok</h2>
+  <div class="group-choices" id="groupChoices"></div>
+  <button class="btn-main" id="startGameBtn" onclick="startGame()" disabled>Mulai Permainan</button>
+</div>
+
+<div id="gameScreen" class="screen">
+  <div class="hud" id="hud"></div>
+  <div class="turn-banner" id="turnBanner"></div>
+  <div id="boardWrap"><div id="board"></div></div>
+  <div class="controls">
+    <button id="diceBtn" onclick="rollDice()">🎲 LEMPAR DADU</button>
+    <div id="diceResult"></div>
+  </div>
+</div>
+
+<div id="winScreen" class="screen">
+  <h1>🏆 Omedetou！</h1>
+  <h2 id="winTeamText" style="color:var(--pink-deep);"></h2>
+  <p style="font-size:1.3rem;color:var(--blue);font-weight:700;">HIRAGANA MASTER！</p>
+  <button class="btn-secondary" onclick="location.reload()">「Mou ichido asobu!」</button>
+</div>
+
+<div class="modal-bg" id="modalBg"><div class="modal" id="modalContent"></div></div>
 
 <script>
-
-/* ==================================================
-   VARIABEL
-================================================== */
-
-var jumlahKelompok = 0;
-
-var kelompokSekarang = 0;
-
-var posisi = [];
-
-var poin = [];
-
-var sudahDadu = false;
-
-var pertanyaanSekarang = null;
-
-var nomorPertanyaan = 0;
-
-
-/* ==================================================
-   BIDAK
-================================================== */
-
-var bidak = [
-    "🌸",
-    "🗻",
-    "⛩️",
-    "🎎",
-    "🍙",
-    "🐱",
-    "🦊",
-    "🐻",
-    "🐼",
-    "🐰"
+/* ============ DATA ============ */
+const KANA = [
+ {k:'あ',r:'a'},{k:'い',r:'i'},{k:'う',r:'u'},{k:'え',r:'e'},{k:'お',r:'o'},
+ {k:'か',r:'ka'},{k:'き',r:'ki'},{k:'く',r:'ku'},{k:'け',r:'ke'},{k:'こ',r:'ko'},
+ {k:'さ',r:'sa'},{k:'し',r:'shi'},{k:'す',r:'su'},{k:'せ',r:'se'},{k:'そ',r:'so'},
+ {k:'た',r:'ta'},{k:'ち',r:'chi'},{k:'つ',r:'tsu'},{k:'て',r:'te'},{k:'と',r:'to'},
+ {k:'な',r:'na'},{k:'に',r:'ni'},{k:'ぬ',r:'nu'},{k:'ね',r:'ne'},{k:'の',r:'no'},
+ {k:'は',r:'ha'},{k:'ひ',r:'hi'},{k:'ふ',r:'fu'},{k:'へ',r:'he'},{k:'ほ',r:'ho'},
+ {k:'ま',r:'ma'},{k:'み',r:'mi'},{k:'む',r:'mu'},{k:'め',r:'me'},{k:'も',r:'mo'},
+ {k:'や',r:'ya'},{k:'ゆ',r:'yu'},{k:'よ',r:'yo'},
+ {k:'ら',r:'ra'},{k:'り',r:'ri'},{k:'る',r:'ru'},{k:'れ',r:'re'},{k:'ろ',r:'ro'},
+ {k:'わ',r:'wa'},{k:'を',r:'wo'},{k:'ん',r:'n'},
+ {k:'が',r:'ga'},{k:'ぎ',r:'gi'},{k:'ぐ',r:'gu'},{k:'げ',r:'ge'},{k:'ご',r:'go'},
+ {k:'ざ',r:'za'},{k:'じ',r:'ji'},{k:'ず',r:'zu'},{k:'ぜ',r:'ze'},{k:'ぞ',r:'zo'},
+ {k:'だ',r:'da'},{k:'ぢ',r:'ji'},{k:'づ',r:'zu'},{k:'で',r:'de'},{k:'ど',r:'do'},
+ {k:'ば',r:'ba'},{k:'び',r:'bi'},{k:'ぶ',r:'bu'},{k:'べ',r:'be'},{k:'ぼ',r:'bo'},
+ {k:'ぱ',r:'pa'},{k:'ぴ',r:'pi'},{k:'ぷ',r:'pu'},{k:'ぺ',r:'pe'},{k:'ぽ',r:'po'},
+ {k:'きゃ',r:'kya'},{k:'きゅ',r:'kyu'},{k:'きょ',r:'kyo'},
+ {k:'しゃ',r:'sha'},{k:'しゅ',r:'shu'},{k:'しょ',r:'sho'},
+ {k:'ちゃ',r:'cha'},{k:'ちゅ',r:'chu'},{k:'ちょ',r:'cho'},
+ {k:'にゃ',r:'nya'},{k:'にゅ',r:'nyu'},{k:'にょ',r:'nyo'},
+ {k:'ひゃ',r:'hya'},{k:'ひゅ',r:'hyu'},{k:'ひょ',r:'hyo'},
+ {k:'みゃ',r:'mya'},{k:'みゅ',r:'myu'},{k:'みょ',r:'myo'},
+ {k:'りゃ',r:'rya'},{k:'りゅ',r:'ryu'},{k:'りょ',r:'ryo'},
+ {k:'ぎゃ',r:'gya'},{k:'ぎゅ',r:'gyu'},{k:'ぎょ',r:'gyo'},
+ {k:'じゃ',r:'ja'},{k:'じゅ',r:'ju'},{k:'じょ',r:'jo'},
+ {k:'びゃ',r:'bya'},{k:'びゅ',r:'byu'},{k:'びょ',r:'byo'},
+ {k:'ぴゃ',r:'pya'},{k:'ぴゅ',r:'pyu'},{k:'ぴょ',r:'pyo'}
+];
+const WORDS = [
+ {k:'ねこ',r:'neko'},{k:'さくら',r:'sakura'},{k:'いぬ',r:'inu'},
+ {k:'たまご',r:'tamago'},{k:'すし',r:'sushi'},{k:'とり',r:'tori'}
+];
+const LISTEN_BANK = [
+ {audio:'neko', correct:'ねこ', options:['ねこ','れこ','ねご','れご']},
+ {audio:'sakura', correct:'さくら', options:['さくら','さらく','さくろ','しくら']},
+ {audio:'inu', correct:'いぬ', options:['いぬ','いね','にぬ','いめ']},
+ {audio:'tori', correct:'とり', options:['とり','とい','こり','どり']}
+];
+const MATCH_BANK = [
+ {k:'さくら', correct:'sakura', options:['sakura','sakora','sekura','sakurae']},
+ {k:'き', correct:'ki', options:['ki','ke','ku','ko']},
+ {k:'ねこ', correct:'neko', options:['neko','nuko','nako','niko']},
+ {k:'いぬ', correct:'inu', options:['inu','ine','uni','ini']}
 ];
 
+const NUM_SQUARES = 22;
+const CELLS_PER_ROW = 6;
+let teams = [], currentTurn = 0, numGroups = 0, boardMeta = [];
+const TEAM_COLORS = ['#e88ca0','#4a7ba6','#d9a441','#5aa85a','#9a6bb0','#c96b3a','#3aa3a3','#b0507a','#7a8c3a','#5a5aa8'];
+const DECOR = ['🌸','☁️','⛩️','🗻','🌞','🍡'];
+const SPECIALS = {3:'bonus',5:'istirahat',7:'challenge',9:'kesempatan',11:'challenge',13:'mundur',
+  15:'challenge',17:'ulangi',19:'challenge',21:'challenge'};
+const SPECIAL_LABEL = {bonus:'⭐ BONUS',kesempatan:'🎁 KESEMPATAN',mundur:'⏪ MUNDUR',ulangi:'🔄 ULANGI',istirahat:'😴 ISTIRAHAT'};
 
-/* ==================================================
-   SOAL
-================================================== */
-
-var soal = [
-
-    /* READ */
-
-    {
-        type:"READ",
-        text:"Bacalah hiragana berikut!",
-        display:"さ",
-        choices:["sa","shi","su","se"],
-        answer:"sa"
-    },
-
-    {
-        type:"READ",
-        text:"Bacalah hiragana berikut!",
-        display:"き",
-        choices:["ka","ki","ku","ke"],
-        answer:"ki"
-    },
-
-    {
-        type:"READ",
-        text:"Bacalah hiragana berikut!",
-        display:"ぬ",
-        choices:["na","nu","ne","no"],
-        answer:"nu"
-    },
-
-    {
-        type:"READ",
-        text:"Bacalah hiragana berikut!",
-        display:"ほ",
-        choices:["ha","hi","fu","ho"],
-        answer:"ho"
-    },
-
-    /* FIND */
-
-    {
-        type:"FIND",
-        text:"Mana huruf hiragana untuk bunyi 'me'?",
-        display:"me",
-        choices:["ぬ","め","ね","も"],
-        answer:"め"
-    },
-
-    {
-        type:"FIND",
-        text:"Mana huruf hiragana untuk bunyi 'shi'?",
-        display:"shi",
-        choices:["さ","し","す","せ"],
-        answer:"し"
-    },
-
-    {
-        type:"FIND",
-        text:"Mana huruf hiragana untuk bunyi 'yo'?",
-        display:"yo",
-        choices:["や","ゆ","よ","ら"],
-        answer:"よ"
-    },
-
-    {
-        type:"FIND",
-        text:"Mana huruf hiragana untuk bunyi 'mu'?",
-        display:"mu",
-        choices:["ま","み","む","め"],
-        answer:"む"
-    },
-
-    /* MATCH */
-
-    {
-        type:"MATCH",
-        text:"Pilih romaji yang tepat!",
-        display:"ち",
-        choices:["ta","chi","tsu","te"],
-        answer:"chi"
-    },
-
-    {
-        type:"MATCH",
-        text:"Pilih romaji yang tepat!",
-        display:"ふ",
-        choices:["ha","hi","fu","he"],
-        answer:"fu"
-    },
-
-    {
-        type:"MATCH",
-        text:"Pilih romaji yang tepat!",
-        display:"り",
-        choices:["ra","ri","ru","re"],
-        answer:"ri"
-    },
-
-    {
-        type:"MATCH",
-        text:"Pilih romaji yang tepat!",
-        display:"む",
-        choices:["ma","mi","mu","me"],
-        answer:"mu"
-    },
-
-    /* MAKE */
-
-    {
-        type:"MAKE",
-        text:"Susun hiragana berikut menjadi kata yang benar!",
-        display:"さ・く・ら",
-        choices:["さくら","さから","すくら","さけら"],
-        answer:"さくら"
-    },
-
-    {
-        type:"MAKE",
-        text:"Susun hiragana berikut menjadi kata yang benar!",
-        display:"ね・こ",
-        choices:["ねこ","ねか","にこ","ぬこ"],
-        answer:"ねこ"
-    },
-
-    {
-        type:"MAKE",
-        text:"Susun hiragana berikut menjadi kata yang benar!",
-        display:"す・し",
-        choices:["すし","さし","すせ","しす"],
-        answer:"すし"
-    },
-
-    {
-        type:"MAKE",
-        text:"Susun hiragana berikut menjadi kata yang benar!",
-        display:"や・ま",
-        choices:["やま","ゆま","やみ","やむ"],
-        answer:"やま"
-    },
-
-    {
-        type:"MAKE",
-        text:"Susun hiragana berikut menjadi kata yang benar!",
-        display:"み・ず",
-        choices:["みず","みずう","まぞ","みせ"],
-        answer:"みず"
-    },
-
-    /* CHALLENGE */
-
-    {
-        type:"CHALLENGE",
-        text:"Bacalah 3 hiragana berikut dengan cepat!",
-        display:"あ　き　ぬ",
-        choices:["a - ki - nu","a - ke - ne","i - ki - nu","a - ku - no"],
-        answer:"a - ki - nu"
-    },
-
-    {
-        type:"CHALLENGE",
-        text:"Bacalah 3 hiragana berikut dengan cepat!",
-        display:"さ　し　す",
-        choices:["sa - shi - su","sa - su - se","shi - sa - su","su - shi - sa"],
-        answer:"sa - shi - su"
-    },
-
-    {
-        type:"CHALLENGE",
-        text:"Bacalah 3 hiragana berikut dengan cepat!",
-        display:"た　ち　つ",
-        choices:["ta - chi - tsu","ta - te - to","chi - tsu - te","ta - tsu - to"],
-        answer:"ta - chi - tsu"
-    },
-
-    {
-        type:"READ",
-        text:"Bacalah hiragana berikut!",
-        display:"が",
-        choices:["ga","ka","gu","go"],
-        answer:"ga"
-    },
-
-    {
-        type:"READ",
-        text:"Bacalah hiragana berikut!",
-        display:"ぱ",
-        choices:["ba","pa","ha","pi"],
-        answer:"pa"
-    },
-
-    {
-        type:"READ",
-        text:"Bacalah hiragana berikut!",
-        display:"きゃ",
-        choices:["kya","kyu","sha","ka"],
-        answer:"kya"
-    },
-
-    {
-        type:"READ",
-        text:"Bacalah hiragana berikut!",
-        display:"しゅ",
-        choices:["sha","shu","sho","su"],
-        answer:"shu"
-    },
-
-    {
-        type:"READ",
-        text:"Bacalah hiragana berikut!",
-        display:"ちょ",
-        choices:["cha","chu","cho","to"],
-        answer:"cho"
-    }
-
-];
-
-
-/* ==================================================
-   PINDAH HALAMAN
-================================================== */
-
-function showPage(id){
-
-    var pages =
-        document.querySelectorAll(".page");
-
-    for(var i=0;i<pages.length;i++){
-
-        pages[i].classList.remove("active");
-
-    }
-
-    document.getElementById(id).classList.add("active");
+/* ============ NAV ============ */
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function goToSetup(){
+  const wrap=document.getElementById('groupChoices'); wrap.innerHTML='';
+  for(let n=2;n<=10;n++){
+    const c=document.createElement('div'); c.className='chip'; c.textContent=n;
+    c.onclick=()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('selected'));c.classList.add('selected');numGroups=n;document.getElementById('startGameBtn').disabled=false;};
+    wrap.appendChild(c);
+  }
+  showScreen('setupScreen');
 }
 
-
-/* ==================================================
-   PILIH KELOMPOK
-================================================== */
-
-function selectTeam(jumlah){
-
-    jumlahKelompok = jumlah;
-
-    var buttons =
-        document.querySelectorAll(".team-select");
-
-    for(var i=0;i<buttons.length;i++){
-
-        buttons[i].classList.remove("selected");
-
-    }
-
-    event.target.classList.add("selected");
-
-    document.getElementById("startGame").disabled = false;
+/* ============ BOARD ============ */
+function buildBoardMeta(){
+  boardMeta=[];
+  for(let i=1;i<=NUM_SQUARES;i++) boardMeta.push({num:i, type:SPECIALS[i]||'normal'});
 }
-
-
-/* ==================================================
-   MULAI
-================================================== */
-
-function startGame(){
-
-    posisi = [];
-    poin = [];
-
-    for(var i=0;i<jumlahKelompok;i++){
-
-        posisi.push(0);
-        poin.push(0);
-
+function renderBoard(){
+  const board=document.getElementById('board'); board.innerHTML='';
+  const rows=[]; let idx=0;
+  while(idx<NUM_SQUARES){ rows.push(boardMeta.slice(idx, idx+CELLS_PER_ROW)); idx+=CELLS_PER_ROW; }
+  rows.forEach((rowCells,rIdx)=>{
+    const rowDiv=document.createElement('div');
+    rowDiv.className='row'+(rIdx%2===1?' reverse':'');
+    if(rIdx===0){
+      const startCell=document.createElement('div');
+      startCell.className='cell start'; startCell.innerHTML='START<div class="pieces" id="pieces-start"></div>';
+      rowDiv.appendChild(startCell);
     }
-
-    kelompokSekarang = 0;
-
-    sudahDadu = false;
-
-    nomorPertanyaan = 0;
-
-    showPage("game");
-
-    gambarPapan();
-
-    gambarSkor();
-
-    updateGiliran();
-
-}
-
-
-/* ==================================================
-   KOTAK KHUSUS
-================================================== */
-
-function kotakKhusus(n){
-
-    if(n===5 || n===15 || n===25){
-
-        return {
-            icon:"⭐",
-            label:"BONUS"
-        };
-
-    }
-
-    if(n===10 || n===20){
-
-        return {
-            icon:"🎁",
-            label:"LUCKY"
-        };
-
-    }
-
-    if(n===13 || n===23){
-
-        return {
-            icon:"⏪",
-            label:"BACK"
-        };
-
-    }
-
-    if(n===18){
-
-        return {
-            icon:"⚡",
-            label:"CHALLENGE"
-        };
-
-    }
-
-    return null;
-}
-
-
-/* ==================================================
-   GAMBAR PAPAN
-================================================== */
-
-function gambarPapan(){
-
-    var board =
-        document.getElementById("board");
-
-    board.innerHTML = "";
-
-
-    for(var n=0;n<=30;n++){
-
-        var cell =
-            document.createElement("div");
-
-        cell.className = "cell";
-
-
-        if(n===0){
-
-            cell.classList.add("start");
-
-            cell.innerHTML =
-                '<strong>START</strong><br>🚩';
-
-        }
-
-        else if(n===30){
-
-            cell.classList.add("goal");
-
-            cell.innerHTML =
-                '<strong>GOAL</strong><br>🏆';
-
-        }
-
-        else{
-
-            var special =
-                kotakKhusus(n);
-
-            cell.innerHTML =
-                '<span class="cell-number">'+
-                n+
-                '</span>';
-
-            if(special){
-
-                cell.classList.add("special");
-
-                cell.innerHTML +=
-                    '<div style="font-size:24px">'+
-                    special.icon+
-                    '</div>'+
-                    '<div class="special-label">'+
-                    special.label+
-                    '</div>';
-
-            }
-
-            else{
-
-                cell.classList.add("normal");
-
-            }
-
-        }
-
-
-        var pawnBox =
-            document.createElement("div");
-
-        pawnBox.className = "pawns";
-
-
-        for(var t=0;t<jumlahKelompok;t++){
-
-            if(posisi[t]===n){
-
-                var pawn =
-                    document.createElement("span");
-
-                pawn.className = "pawn";
-
-                pawn.innerHTML = bidak[t];
-
-                pawnBox.appendChild(pawn);
-
-            }
-
-        }
-
-
-        cell.appendChild(pawnBox);
-
-        board.appendChild(cell);
-
-    }
-
-}
-
-
-/* ==================================================
-   SKOR
-================================================== */
-
-function gambarSkor(){
-
-    var row =
-        document.getElementById("scoreRow");
-
-    row.innerHTML = "";
-
-
-    for(var i=0;i<jumlahKelompok;i++){
-
-        var item =
-            document.createElement("div");
-
-        item.className = "score-item";
-
-
-        if(i===kelompokSekarang){
-
-            item.classList.add("active-team");
-
-        }
-
-
-        item.innerHTML =
-            bidak[i]+
-            " Kelompok "+
-            (i+1)+
-            " : "+
-            poin[i]+
-            " poin";
-
-
-        row.appendChild(item);
-
-    }
-
-}
-
-
-/* ==================================================
-   GILIRAN
-================================================== */
-
-function updateGiliran(){
-
-    document.getElementById("turn").innerHTML =
-        bidak[kelompokSekarang]+
-        " Kelompok "+
-        (kelompokSekarang+1)+
-        " mendapat giliran";
-
-}
-
-
-/* ==================================================
-   DADU
-================================================== */
-
-function rollDice(){
-
-    if(sudahDadu){
-        return;
-    }
-
-    sudahDadu = true;
-
-    document.getElementById("rollButton").disabled = true;
-
-
-    var angka =
-        Math.floor(Math.random()*6)+1;
-
-
-    var wajah = [
-        "⚀",
-        "⚁",
-        "⚂",
-        "⚃",
-        "⚄",
-        "⚅"
-    ];
-
-
-    document.getElementById("diceFace").innerHTML =
-        wajah[angka-1];
-
-
-    gerakkanBidak(angka);
-
-}
-
-
-/* ==================================================
-   GERAK
-================================================== */
-
-function gerakkanBidak(angka){
-
-    posisi[kelompokSekarang] += angka;
-
-
-    if(posisi[kelompokSekarang]>30){
-
-        posisi[kelompokSekarang]=30;
-
-    }
-
-
-    gambarPapan();
-
-
-    if(posisi[kelompokSekarang]===30){
-
-        poin[kelompokSekarang]+=20;
-
-        gambarSkor();
-
-        setTimeout(function(){
-
-            tampilkanPemenang();
-
-        },500);
-
-        return;
-
-    }
-
-
-    setTimeout(function(){
-
-        tampilkanTantangan();
-
-    },400);
-
-}
-
-
-/* ==================================================
-   TANTANGAN
-================================================== */
-
-function tampilkanTantangan(){
-
-    var q =
-        soal[nomorPertanyaan];
-
-    pertanyaanSekarang=q;
-
-    nomorPertanyaan++;
-
-    if(nomorPertanyaan>=soal.length){
-
-        nomorPertanyaan=0;
-
-    }
-
-
-    var box =
-        document.getElementById("challenge");
-
-
-    var html = "";
-
-
-    html +=
-        '<div class="challenge-type">'+
-        q.type+
-        '</div>';
-
-
-    html +=
-        '<div class="challenge-title">'+
-        q.text+
-        '</div>';
-
-
-    html +=
-        '<div class="big-hira">'+
-        q.display+
-        '</div>';
-
-
-    html +=
-        '<div class="choices">';
-
-
-    for(var i=0;i<q.choices.length;i++){
-
-        html +=
-            '<button class="choice" '+
-            'onclick="jawab(this,\''+
-            escapeQuotes(q.choices[i])+
-            '\')">'+
-            String.fromCharCode(65+i)+
-            '. '+
-            q.choices[i]+
-            '</button>';
-
-    }
-
-
-    html += "</div>";
-
-    html += '<div id="feedback"></div>';
-
-
-    box.innerHTML=html;
-
-}
-
-
-/* ==================================================
-   ESCAPE
-================================================== */
-
-function escapeQuotes(text){
-
-    return text.replace(/'/g,"\\'");
-
-}
-
-
-/* ==================================================
-   JAWAB
-================================================== */
-
-function jawab(button,jawaban){
-
-    var buttons =
-        document.querySelectorAll(".choice");
-
-
-    for(var i=0;i<buttons.length;i++){
-
-        buttons[i].disabled=true;
-
-    }
-
-
-    var benar =
-        jawaban === pertanyaanSekarang.answer;
-
-
-    if(benar){
-
-        button.classList.add("correct");
-
-        poin[kelompokSekarang]+=10;
-
-
-        document.getElementById("feedback").innerHTML =
-
-            '<div class="feedback">🎉 Benar!</div>'+
-            '<div class="answer-info">'+
-            'Jawaban: <b>'+
-            pertanyaanSekarang.answer+
-            '</b></div>'+
-            '<button class="next" onclick="selesaiTantangan()">'+
-            '▶ Kembali ke papan'+
-            '</button>';
-
-    }
-
-    else{
-
-        button.classList.add("wrong");
-
-        posisi[kelompokSekarang]--;
-
-        if(posisi[kelompokSekarang]<0){
-
-            posisi[kelompokSekarang]=0;
-
-        }
-
-
-        document.getElementById("feedback").innerHTML =
-
-            '<div class="feedback">もういちど！</div>'+
-            '<div class="answer-info">'+
-            'Jawaban benar: <b>'+
-            pertanyaanSekarang.answer+
-            '</b></div>'+
-            '<div class="answer-info">'+
-            'Karena salah, bidak mundur 1 kotak.'+
-            '</div>'+
-            '<button class="next" onclick="selesaiTantangan()">'+
-            '▶ Kembali ke papan'+
-            '</button>';
-
-    }
-
-
-    gambarSkor();
-
-}
-
-
-/* ==================================================
-   SELESAI TANTANGAN
-================================================== */
-
-function selesaiTantangan(){
-
-    var special =
-        kotakKhusus(posisi[kelompokSekarang]);
-
-
-    gambarPapan();
-
-
-    if(special && special.label==="BONUS"){
-
-        posisi[kelompokSekarang]+=2;
-
-        if(posisi[kelompokSekarang]>30){
-
-            posisi[kelompokSekarang]=30;
-
-        }
-
-        gambarPapan();
-
-
-        document.getElementById("challenge").innerHTML =
-
-            '<div class="challenge-type">⭐ BONUS</div>'+
-            '<div class="challenge-title">'+
-            'Bonus! Maju 2 kotak.'+
-            '</div>'+
-            '<button class="next" onclick="lanjutGiliran()">'+
-            '▶ Lanjut'+
-            '</button>';
-
-        return;
-
-    }
-
-
-    if(special && special.label==="BACK"){
-
-        posisi[kelompokSekarang]-=2;
-
-        if(posisi[kelompokSekarang]<0){
-
-            posisi[kelompokSekarang]=0;
-
-        }
-
-        gambarPapan();
-
-
-        document.getElementById("challenge").innerHTML =
-
-            '<div class="challenge-type">⏪ BACK</div>'+
-            '<div class="challenge-title">'+
-            'Mundur 2 kotak!'+
-            '</div>'+
-            '<button class="next" onclick="lanjutGiliran()">'+
-            '▶ Lanjut'+
-            '</button>';
-
-        return;
-
-    }
-
-
-    if(special && special.label==="LUCKY"){
-
-        sudahDadu=false;
-
-        document.getElementById("rollButton").disabled=false;
-
-
-        document.getElementById("challenge").innerHTML =
-
-            '<div class="challenge-type">🎁 LUCKY</div>'+
-            '<div class="challenge-title">'+
-            'Beruntung! Lempar dadu lagi.'+
-            '</div>';
-
-        return;
-
-    }
-
-
-    if(special && special.label==="CHALLENGE"){
-
-        document.getElementById("challenge").innerHTML =
-
-            '<div class="challenge-type">⚡ CHALLENGE</div>'+
-            '<div class="challenge-title">'+
-            'Tantangan cepat berikutnya!'+
-            '</div>'+
-            '<p>Klik lanjut untuk mendapatkan tantangan.</p>'+
-            '<button class="next" onclick="tampilkanTantanganLagi()">'+
-            '⚡ CHALLENGE'+
-            '</button>';
-
-        return;
-
-    }
-
-
-    lanjutGiliran();
-
-}
-
-
-/* ==================================================
-   CHALLENGE KHUSUS
-================================================== */
-
-function tampilkanTantanganLagi(){
-
-    tampilkanTantangan();
-
-}
-
-
-/* ==================================================
-   GANTI GILIRAN
-================================================== */
-
-function lanjutGiliran(){
-
-    kelompokSekarang++;
-
-    if(kelompokSekarang>=jumlahKelompok){
-
-        kelompokSekarang=0;
-
-    }
-
-
-    sudahDadu=false;
-
-    document.getElementById("rollButton").disabled=false;
-
-    document.getElementById("diceFace").innerHTML="🎲";
-
-    gambarPapan();
-
-    gambarSkor();
-
-    updateGiliran();
-
-
-    document.getElementById("challenge").innerHTML =
-
-        '<div class="challenge-type">GILIRAN BERIKUTNYA</div>'+
-        '<div class="challenge-title">'+
-        bidak[kelompokSekarang]+
-        ' Kelompok '+
-        (kelompokSekarang+1)+
-        '</div>'+
-        '<p>Silakan lempar dadu.</p>';
-
-}
-
-
-/* ==================================================
-   PEMENANG
-================================================== */
-
-function tampilkanPemenang(){
-
-    var nama =
-        "Kelompok "+
-        (kelompokSekarang+1)+
-        " "+
-        bidak[kelompokSekarang];
-
-
-    document.getElementById("winnerText").innerHTML =
-
-        '<b style="font-size:30px">'+
-        nama+
-        '</b>'+
-        '<br>'+
-        '<span>menjadi kelompok pertama yang mencapai GOAL!</span>';
-
-
-    buatRekap();
-
-    showPage("summary");
-
-}
-
-
-/* ==================================================
-   REKAP
-================================================== */
-
-function buatRekap(){
-
-    var data=[];
-
-
-    for(var i=0;i<jumlahKelompok;i++){
-
-        data.push({
-            nomor:i,
-            poin:poin[i],
-            posisi:posisi[i]
-        });
-
-    }
-
-
-    data.sort(function(a,b){
-
-        if(b.posisi!==a.posisi){
-
-            return b.posisi-a.posisi;
-
-        }
-
-        return b.poin-a.poin;
-
+    rowCells.forEach(sq=>{
+      const cell=document.createElement('div');
+      cell.className='cell type-'+sq.type; cell.id='cell-'+sq.num;
+      const icon = sq.type==='normal' ? DECOR[sq.num%DECOR.length] : (sq.type==='challenge'?'❓':SPECIAL_LABEL[sq.type].split(' ')[0]);
+      const badge = sq.type!=='normal' && sq.type!=='challenge' ? `<div class="badge">${SPECIAL_LABEL[sq.type].split(' ')[1]}</div>` : (sq.type==='challenge'?'<div class="badge">SOAL</div>':'');
+      cell.innerHTML=`<span class="num">${sq.num}</span><span class="icon">${icon}</span>${badge}<div class="pieces" id="pieces-${sq.num}"></div>`;
+      rowDiv.appendChild(cell);
     });
-
-
-    var body =
-        document.getElementById("summaryBody");
-
-    body.innerHTML="";
-
-
-    for(var j=0;j<data.length;j++){
-
-        var d=data[j];
-
-
-        var row =
-            document.createElement("tr");
-
-
-        row.innerHTML =
-
-            "<td>"+(j+1)+"</td>"+
-            "<td>"+
-            bidak[d.nomor]+
-            " Kelompok "+
-            (d.nomor+1)+
-            "</td>"+
-            "<td>"+
-            d.poin+
-            "</td>"+
-            "<td>"+
-            d.posisi+
-            " / 30"+
-            "</td>";
-
-
-        body.appendChild(row);
-
+    if(rIdx===rows.length-1){
+      const goalCell=document.createElement('div');
+      goalCell.className='cell goal'; goalCell.innerHTML='GOAL<div class="pieces" id="pieces-goal"></div>';
+      rowDiv.appendChild(goalCell);
     }
-
+    board.appendChild(rowDiv);
+  });
+}
+function placePieces(){
+  document.querySelectorAll('.pieces').forEach(p=>p.innerHTML='');
+  teams.forEach(t=>{
+    const id = t.pos<=0?'pieces-start':(t.pos>=NUM_SQUARES?'pieces-goal':'pieces-'+t.pos);
+    const el=document.getElementById(id); if(!el) return;
+    const tok=document.createElement('div'); tok.className='token'; tok.style.background=t.color; tok.textContent=(t.id+1);
+    el.appendChild(tok);
+  });
 }
 
-</script>
+/* ============ GAME START ============ */
+function startGame(){
+  buildBoardMeta();
+  teams=[];
+  for(let i=0;i<numGroups;i++) teams.push({id:i,name:'Tim '+(i+1),pos:0,score:0,color:TEAM_COLORS[i%TEAM_COLORS.length],skip:false});
+  currentTurn=0;
+  showScreen('gameScreen'); renderBoard(); renderHud(); placePieces(); updateTurnBanner();
+}
+function renderHud(){
+  const hud=document.getElementById('hud'); hud.innerHTML='';
+  teams.forEach((t,i)=>{
+    const card=document.createElement('div'); card.className='score-card'+(i===currentTurn?' active':''); card.id='score-'+i;
+    card.innerHTML=`<span style="color:${t.color};font-weight:900;">●</span> ${t.name.toUpperCase()}: ${t.score} POIN`;
+    hud.appendChild(card);
+  });
+}
+function updateTurnBanner(){
+  document.querySelectorAll('.score-card').forEach(c=>c.classList.remove('active'));
+  const a=document.getElementById('score-'+currentTurn); if(a)a.classList.add('active');
+  document.getElementById('turnBanner').textContent=`Giliran ${teams[currentTurn].name}!`;
+}
 
+/* ============ DICE ============ */
+function rollDice(){
+  document.getElementById('diceBtn').disabled=true;
+  const r=document.getElementById('diceResult'); let t=0;
+  const spin=setInterval(()=>{ r.textContent='🎲 '+(Math.floor(Math.random()*6)+1); t++;
+    if(t>8){ clearInterval(spin); const roll=Math.floor(Math.random()*6)+1; r.textContent='🎲 '+roll; movePiece(roll); }
+  },70);
+}
+function movePiece(steps){
+  const team=teams[currentTurn];
+  team.pos=Math.min(team.pos+steps, NUM_SQUARES);
+  placePieces();
+  setTimeout(()=>{
+    if(team.pos>=NUM_SQUARES){ endGame(team); return; }
+    resolveSquare(boardMeta[team.pos-1], team);
+  },350);
+}
+function resolveSquare(sq, team){
+  if(sq.type==='challenge'){ openChallenge(team); }
+  else if(sq.type==='bonus'){ showSpecial(team,'⭐ BONUS! Maju 2 langkah!',()=>{team.pos=Math.min(team.pos+2,NUM_SQUARES);placePieces();nextTurn();}); }
+  else if(sq.type==='kesempatan'){ showSpecial(team,'🎁 KESEMPATAN! Lempar dadu sekali lagi!',()=>{document.getElementById('diceBtn').disabled=false;document.getElementById('diceResult').textContent='';}); }
+  else if(sq.type==='mundur'){ showSpecial(team,'⏪ MUNDUR! Mundur 2 langkah!',()=>{team.pos=Math.max(team.pos-2,0);placePieces();nextTurn();}); }
+  else if(sq.type==='ulangi'){ showSpecial(team,'🔄 ULANGI! Main sekali lagi!',()=>{document.getElementById('diceBtn').disabled=false;document.getElementById('diceResult').textContent='';}); }
+  else if(sq.type==='istirahat'){ showSpecial(team,'😴 ISTIRAHAT! Lewati giliran berikutnya',()=>{team.skip=true;nextTurn();}); }
+  else nextTurn();
+}
+function showSpecial(team,text,after){
+  document.getElementById('modalContent').innerHTML=`<div id="specialBanner">${text}</div><button class="btn-secondary" id="tsugiBtn">Tsugi!</button>`;
+  document.getElementById('modalBg').classList.add('active');
+  document.getElementById('tsugiBtn').onclick=()=>{document.getElementById('modalBg').classList.remove('active');after();};
+}
+function nextTurn(){
+  let tries=0;
+  do{ currentTurn=(currentTurn+1)%teams.length; tries++; }while(teams[currentTurn].skip && (teams[currentTurn].skip=false) && tries<teams.length+1);
+  renderHud(); updateTurnBanner();
+  document.getElementById('diceBtn').disabled=false; document.getElementById('diceResult').textContent='';
+}
+
+/* ============ CHALLENGES ============ */
+function rnd(a){return a[Math.floor(Math.random()*a.length)];}
+function shuffle(a){return a.map(v=>[Math.random(),v]).sort((x,y)=>x[0]-y[0]).map(v=>v[1]);}
+let qTimer=null, timeLeft=60;
+function startTimer(onExpire){
+  timeLeft=60; const el=()=>document.getElementById('timerText');
+  if(qTimer) clearInterval(qTimer);
+  qTimer=setInterval(()=>{ timeLeft--; if(el())el().textContent='⏱ '+timeLeft+' detik'; if(timeLeft<=0){clearInterval(qTimer); onExpire();} },1000);
+}
+function openChallenge(team){
+  const type=rnd(['baca','tebak','cocok','dengar','tulis']);
+  const modal=document.getElementById('modalContent'); window.currentChallengeTeam=team; window.answered=false;
+  let html='';
+  if(type==='baca'){
+    const pool = Math.random()<0.5 ? WORDS : KANA; const item=rnd(pool);
+    const wrongs=shuffle(pool.filter(x=>x.r!==item.r)).slice(0,3).map(x=>x.r);
+    const opts=shuffle([item.r,...wrongs]);
+    html=`<h3>Membaca Kata</h3><div class="timer-box" id="timerText">⏱ 60 detik</div><p>Pilih romaji yang benar:</p><div class="prompt-jp">${item.k}</div>
+      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="checkAnswer(this,'${o}','${item.r}')">${o}</button>`).join('')}</div>
+      <div class="feedback" id="fb"></div><button class="btn-secondary hidden" id="nextBtn" onclick="closeChallenge()">Tsugi!</button>`;
+  } else if(type==='tebak'){
+    const pool = Math.random()<0.5 ? WORDS : KANA; const item=rnd(pool);
+    const wrongs=shuffle(pool.filter(x=>x.k!==item.k)).slice(0,3).map(x=>x.k);
+    const opts=shuffle([item.k,...wrongs]);
+    html=`<h3>Tebak Hiragana</h3><div class="timer-box" id="timerText">⏱ 60 detik</div><p>Pilih hiragana yang sesuai untuk:</p><div class="prompt-jp" style="font-size:2.2rem;">${item.r}</div>
+      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="checkAnswer(this,'${o}','${item.k}')" style="font-size:1.6rem;">${o}</button>`).join('')}</div>
+      <div class="feedback" id="fb"></div><button class="btn-secondary hidden" id="nextBtn" onclick="closeChallenge()">Tsugi!</button>`;
+  } else if(type==='cocok'){
+    const item=rnd(MATCH_BANK); const opts=shuffle(item.options);
+    html=`<h3>Cocokkan</h3><div class="timer-box" id="timerText">⏱ 60 detik</div><p>Cocokkan dengan romaji yang tepat:</p><div class="prompt-jp">${item.k}</div>
+      <div class="options">${opts.map(o=>`<button class="opt-btn" onclick="checkAnswer(this,'${o}','${item.correct}')">${o}</button>`).join('')}</div>
+      <div class="feedback" id="fb"></div><button class="btn-secondary hidden" id="nextBtn" onclick="closeChallenge()">Tsugi!</button>`;
+  } else if(type==='dengar'){
+    const item=rnd(LISTEN_BANK); const opts=shuffle(item.options);
+    html=`<h3>Dengarkan</h3><div class="timer-box" id="timerText">⏱ 60 detik</div><p>Dengarkan audio, lalu pilih hiragana yang sesuai:</p>
+      <button class="btn-secondary" onclick="speakWord('${item.audio}')">🔊 Putar Audio</button>
+      <div class="options" style="margin-top:14px;">${opts.map(o=>`<button class="opt-btn" onclick="checkAnswer(this,'${o}','${item.correct}')" style="font-size:1.6rem;">${o}</button>`).join('')}</div>
+      <div class="feedback" id="fb"></div><button class="btn-secondary hidden" id="nextBtn" onclick="closeChallenge()">Tsugi!</button>`;
+  } else {
+    const item=rnd(WORDS);
+    html=`<h3>Tulis</h3><div class="timer-box" id="timerText">⏱ 60 detik</div><p>Tulis romaji yang benar di kertas/papan!</p><div class="prompt-jp">${item.k}</div>
+      <input class="write-input" id="writeInput" placeholder="tulis di kertas..." disabled>
+      <p style="color:#8a8272;font-size:.85rem;">Guru yang memeriksa jawaban siswa secara langsung.</p>
+      <div class="teacher-check"><button class="btn-ok" onclick="teacherGrade(true)">✔️ Benar (guru menilai)</button><button class="btn-no" onclick="teacherGrade(false)">✖️ Salah</button></div>
+      <div class="feedback" id="fb"></div><button class="btn-secondary hidden" id="nextBtn" onclick="closeChallenge()">Tsugi!</button>`;
+  }
+  modal.innerHTML=html;
+  document.getElementById('modalBg').classList.add('active');
+  if(type!=='tulis'){
+    startTimer(()=>{ if(!window.answered){ window.answered=true; document.getElementById('fb').textContent='Waktu habis! ⏱'; document.getElementById('fb').style.color='#a83a3a'; document.getElementById('nextBtn').classList.remove('hidden'); } });
+  } else {
+    startTimer(()=>{ if(document.getElementById('timerText')) document.getElementById('timerText').textContent='⏰ Waktu habis'; });
+  }
+}
+function speakWord(word){
+  if('speechSynthesis' in window){
+    const u=new SpeechSynthesisUtterance(word); u.lang='ja-JP'; u.rate=0.8;
+    window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+  }
+}
+function checkAnswer(btn, chosen, correct){
+  if(window.answered) return; window.answered=true; if(qTimer) clearInterval(qTimer);
+  const ok = chosen===correct;
+  document.querySelectorAll('.opt-btn').forEach(b=>{ if(b.textContent===correct) b.classList.add('correct'); if(b===btn && !ok) b.classList.add('wrong'); });
+  if(ok){ window.currentChallengeTeam.score+=10; renderHud(); }
+  const fb=document.getElementById('fb');
+  fb.textContent = ok ? 'Seikai! 🎉 +10 poin' : `Zannen! ❌ Jawaban benar: ${correct}`;
+  fb.style.color = ok ? '#3a8a3a' : '#a83a3a';
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+function teacherGrade(correct){
+  if(window.answered) return; window.answered=true; if(qTimer) clearInterval(qTimer);
+  if(correct){ window.currentChallengeTeam.score+=10; renderHud(); }
+  const fb=document.getElementById('fb');
+  fb.textContent = correct ? 'Seikai! 🎉 +10 poin (dinilai guru)' : 'Zannen! ❌ (dinilai guru)';
+  fb.style.color = correct ? '#3a8a3a' : '#a83a3a';
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+function closeChallenge(){ document.getElementById('modalBg').classList.remove('active'); nextTurn(); }
+
+/* ============ WIN ============ */
+function endGame(team){
+  document.getElementById('winTeamText').textContent = `「${team.name} no kachi desu!」`;
+  showScreen('winScreen');
+}
+</script>
 </body>
 </html>
