@@ -32,11 +32,12 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .score-card.active{border-color:var(--gold);background:#fff8e6;}
 .turn-banner{background:var(--pink-deep);color:#fff;padding:9px 22px;border-radius:22px;font-size:1.05rem;margin-bottom:10px;}
 #boardWrap{position:relative;width:100%;max-width:1000px;margin-bottom:12px;}
-#board{display:flex;flex-direction:column;gap:6px;}
-.row{display:flex;gap:6px;}
-.row.reverse{flex-direction:row-reverse;}
-.cell{flex:1;aspect-ratio:1/1;background:#fff;border:3px solid var(--line);border-radius:50%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;font-size:.65rem;color:#8a8272;min-width:0;}
+#board{position:relative;width:100%;}
+#boardSvg{position:absolute;inset:0;width:100%;height:100%;}
+.pathline{fill:none;stroke:#8a5240;stroke-width:.42;stroke-linecap:round;stroke-linejoin:round;}
+.pathdot{fill:#8a5240;}
+.cell{position:absolute;background:#fff;border:3px solid var(--line);border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.62rem;color:#8a8272;}
 .cell .num{position:absolute;top:2px;left:6px;font-size:.5rem;color:#a89f8a;}
 .cell.type-challenge{background:#fdf0f2;}
 .cell.type-bonus{background:#fff6df;}
@@ -157,13 +158,13 @@ const MATCH_BANK = [
  {k:'いぬ', correct:'inu', options:['inu','ine','uni','ini']}
 ];
 
-const NUM_SQUARES = 22;
-const CELLS_PER_ROW = 6;
+const NUM_SQUARES = 24;
+const COLS = 6;
 let teams = [], currentTurn = 0, numGroups = 0, boardMeta = [];
 const TEAM_COLORS = ['#e88ca0','#4a7ba6','#d9a441','#5aa85a','#9a6bb0','#c96b3a','#3aa3a3','#b0507a','#7a8c3a','#5a5aa8'];
 const DECOR = ['🌸','☁️','⛩️','🗻','🌞','🍡'];
-const SPECIALS = {3:'bonus',5:'istirahat',7:'challenge',9:'kesempatan',11:'challenge',13:'mundur',
-  15:'challenge',17:'ulangi',19:'challenge',21:'challenge'};
+/* Hanya sedikit kotak khusus, sisanya (mayoritas) adalah kotak soal (challenge) */
+const SPECIALS = {4:'bonus',9:'kesempatan',13:'istirahat',18:'mundur',22:'ulangi'};
 const SPECIAL_LABEL = {bonus:'⭐ BONUS',kesempatan:'🎁 KESEMPATAN',mundur:'⏪ MUNDUR',ulangi:'🔄 ULANGI',istirahat:'😴 ISTIRAHAT'};
 
 /* ============ RULES ============ */
@@ -203,34 +204,43 @@ function goToSetup(){
 /* ============ BOARD ============ */
 function buildBoardMeta(){
   boardMeta=[];
-  for(let i=1;i<=NUM_SQUARES;i++) boardMeta.push({num:i, type:SPECIALS[i]||'normal'});
+  for(let i=1;i<=NUM_SQUARES;i++) boardMeta.push({num:i, type:SPECIALS[i]||'challenge'});
+}
+function snakePos(i,cols){
+  const row=Math.floor(i/cols); const c=i%cols;
+  const x = row%2===0 ? c : cols-1-c;
+  return {x,y:row};
 }
 function renderBoard(){
   const board=document.getElementById('board'); board.innerHTML='';
-  const rows=[]; let idx=0;
-  while(idx<NUM_SQUARES){ rows.push(boardMeta.slice(idx, idx+CELLS_PER_ROW)); idx+=CELLS_PER_ROW; }
-  rows.forEach((rowCells,rIdx)=>{
-    const rowDiv=document.createElement('div');
-    rowDiv.className='row'+(rIdx%2===1?' reverse':'');
-    if(rIdx===0){
-      const startCell=document.createElement('div');
-      startCell.className='cell start'; startCell.innerHTML='START<div class="pieces" id="pieces-start"></div>';
-      rowDiv.appendChild(startCell);
+  const nodes=[{type:'start'}, ...boardMeta, {type:'goal'}];
+  const rows=Math.ceil(nodes.length/COLS);
+  board.style.paddingTop=(rows/COLS*100)+'%';
+  const svgNS='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(svgNS,'svg');
+  svg.setAttribute('id','boardSvg'); svg.setAttribute('viewBox',`0 0 ${COLS} ${rows}`); svg.setAttribute('preserveAspectRatio','none');
+  const coords=nodes.map((n,i)=>snakePos(i,COLS));
+  const pts=coords.map(p=>`${p.x+0.5},${p.y+0.5}`).join(' ');
+  const poly=document.createElementNS(svgNS,'polyline'); poly.setAttribute('points',pts); poly.setAttribute('class','pathline');
+  svg.appendChild(poly);
+  board.appendChild(svg);
+  const cellW=(0.82/COLS*100)+'%', cellH=(0.82/rows*100)+'%';
+  nodes.forEach((n,i)=>{
+    const p=coords[i];
+    const cell=document.createElement('div');
+    const type = n.type || 'challenge';
+    cell.className='cell '+(type==='start'||type==='goal' ? type : 'type-'+type);
+    cell.style.left=((p.x+0.5)/COLS*100)+'%'; cell.style.top=((p.y+0.5)/rows*100)+'%';
+    cell.style.width=cellW; cell.style.height=cellH; cell.style.transform='translate(-50%,-50%)';
+    if(type==='start'){ cell.id='cellStart'; cell.innerHTML='START<div class="pieces" id="pieces-start"></div>'; }
+    else if(type==='goal'){ cell.id='cellGoal'; cell.innerHTML='GOAL<div class="pieces" id="pieces-goal"></div>'; }
+    else {
+      cell.id='cell-'+n.num;
+      const icon = type==='challenge' ? '❓' : SPECIAL_LABEL[type].split(' ')[0];
+      const badge = type==='challenge' ? '<div class="badge">SOAL</div>' : `<div class="badge">${SPECIAL_LABEL[type].split(' ')[1]}</div>`;
+      cell.innerHTML=`<span class="num">${n.num}</span><span class="icon">${icon}</span>${badge}<div class="pieces" id="pieces-${n.num}"></div>`;
     }
-    rowCells.forEach(sq=>{
-      const cell=document.createElement('div');
-      cell.className='cell type-'+sq.type; cell.id='cell-'+sq.num;
-      const icon = sq.type==='normal' ? DECOR[sq.num%DECOR.length] : (sq.type==='challenge'?'❓':SPECIAL_LABEL[sq.type].split(' ')[0]);
-      const badge = sq.type!=='normal' && sq.type!=='challenge' ? `<div class="badge">${SPECIAL_LABEL[sq.type].split(' ')[1]}</div>` : (sq.type==='challenge'?'<div class="badge">SOAL</div>':'');
-      cell.innerHTML=`<span class="num">${sq.num}</span><span class="icon">${icon}</span>${badge}<div class="pieces" id="pieces-${sq.num}"></div>`;
-      rowDiv.appendChild(cell);
-    });
-    if(rIdx===rows.length-1){
-      const goalCell=document.createElement('div');
-      goalCell.className='cell goal'; goalCell.innerHTML='GOAL<div class="pieces" id="pieces-goal"></div>';
-      rowDiv.appendChild(goalCell);
-    }
-    board.appendChild(rowDiv);
+    board.appendChild(cell);
   });
 }
 function placePieces(){
