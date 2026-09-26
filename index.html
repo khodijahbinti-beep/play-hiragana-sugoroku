@@ -31,14 +31,18 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .score-card{background:#fff;border-radius:12px;padding:7px 12px;border:2px solid var(--line);font-size:.85rem;min-width:110px;display:flex;align-items:center;gap:6px;}
 .score-card.active{border-color:var(--gold);background:#fff8e6;}
 .turn-banner{background:var(--pink-deep);color:#fff;padding:9px 22px;border-radius:22px;font-size:1.05rem;margin-bottom:10px;}
-#boardWrap{position:relative;width:100%;max-width:1000px;margin-bottom:12px;}
+#boardWrap{position:relative;width:100%;max-width:1000px;margin-bottom:12px;background:
+  repeating-radial-gradient(circle at 12px 12px, rgba(138,82,64,.06) 0, rgba(138,82,64,.06) 2px, transparent 2px, transparent 22px);
+  border-radius:20px;padding:14px;}
+.board-decor{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:20px;}
+.board-decor span{position:absolute;opacity:.16;filter:saturate(.8);}
 #board{position:relative;width:100%;}
 #boardSvg{position:absolute;inset:0;width:100%;height:100%;}
 .pathline{fill:none;stroke:#8a5240;stroke-width:.42;stroke-linecap:round;stroke-linejoin:round;}
 .pathdot{fill:#8a5240;}
 .cell{position:absolute;background:#fff;border:3px solid var(--line);border-radius:50%;
   display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.62rem;color:#8a8272;}
-.cell .num{position:absolute;top:2px;left:6px;font-size:.5rem;color:#a89f8a;}
+.cell .num{position:absolute;top:2px;left:6px;font-size:.62rem;color:#5a4030;font-weight:800;}
 .cell.type-challenge{background:#fdf0f2;}
 .cell.type-bonus{background:#fff6df;}
 .cell.type-kesempatan{background:#eef6ee;}
@@ -59,6 +63,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
 .modal-bg.active{display:flex;}
 .modal{background:#fff;border-radius:18px;padding:26px;max-width:520px;width:100%;text-align:center;box-shadow:0 20px 40px rgba(0,0,0,.25);}
 .modal h3{color:var(--blue);margin-top:0;}
+.modal p{color:var(--ink);font-size:1.05rem;font-weight:600;line-height:1.5;}
 .prompt-jp{font-size:3rem;color:var(--pink-deep);margin:8px 0;}
 .timer-box{font-size:1.1rem;color:var(--pink-deep);font-weight:700;margin-bottom:8px;}
 .options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0;}
@@ -95,7 +100,17 @@ button{font-family:inherit;cursor:pointer;border:none;}
 <div id="gameScreen" class="screen">
   <div class="hud" id="hud"></div>
   <div class="turn-banner" id="turnBanner"></div>
-  <div id="boardWrap"><div id="board"></div></div>
+  <div id="boardWrap">
+    <div class="board-decor">
+      <span style="left:1%;bottom:-4%;font-size:5.5rem;">🗻</span>
+      <span style="right:3%;top:-5%;font-size:3rem;">🌸</span>
+      <span style="left:22%;top:-6%;font-size:2.4rem;">☁️</span>
+      <span style="right:20%;bottom:-6%;font-size:2.6rem;">☁️</span>
+      <span style="left:48%;top:-7%;font-size:2rem;">🌸</span>
+      <span style="right:45%;bottom:-4%;font-size:2.2rem;">☁️</span>
+    </div>
+    <div id="board"></div>
+  </div>
   <div class="controls">
     <button id="diceBtn" onclick="rollDice()">🎲 LEMPAR DADU</button>
     <div id="diceResult"></div>
@@ -171,6 +186,31 @@ function showRules(){
   document.getElementById('modalBg').classList.add('active');
 }
 function closeModalOnly(){ document.getElementById('modalBg').classList.remove('active'); }
+
+/* ============ SOUND EFFECTS (Web Audio API, tanpa file eksternal) ============ */
+function beep(freq,duration=120,type='sine',vol=0.18,delay=0){
+  try{
+    const ctx = window.audioCtx || (window.audioCtx = new (window.AudioContext||window.webkitAudioContext)());
+    setTimeout(()=>{
+      const osc=ctx.createOscillator(), gain=ctx.createGain();
+      osc.type=type; osc.frequency.value=freq; gain.gain.value=vol;
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start();
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+duration/1000);
+      osc.stop(ctx.currentTime+duration/1000);
+    },delay);
+  }catch(e){}
+}
+function soundDiceTick(){ beep(600,45,'square',0.1); }
+function soundStep(){ beep(500,80,'square',0.14); }
+function soundBack(){ beep(230,120,'square',0.14); }
+function soundChallenge(){ beep(880,140,'triangle',0.2); beep(1046,160,'triangle',0.2,120); }
+function soundBonus(){ beep(660,110,'triangle',0.2); beep(880,160,'triangle',0.2,100); beep(1108,180,'triangle',0.2,200); }
+function soundKesempatan(){ beep(784,120,'triangle',0.2); beep(988,150,'triangle',0.2,110); }
+function soundMundur(){ beep(392,150,'sawtooth',0.16); beep(294,220,'sawtooth',0.16,130); }
+function soundUlangi(){ beep(523,90,'square',0.15); beep(523,90,'square',0.15,140); beep(523,90,'square',0.15,280); }
+function soundIstirahat(){ beep(330,350,'sine',0.14); }
+function soundWin(){ beep(660,140,'triangle',0.22); beep(880,140,'triangle',0.22,140); beep(1046,220,'triangle',0.22,280); }
 
 /* ============ NAV ============ */
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
@@ -263,29 +303,31 @@ function updateTurnBanner(){
 function rollDice(){
   document.getElementById('diceBtn').disabled=true;
   const r=document.getElementById('diceResult'); let t=0;
-  const spin=setInterval(()=>{ r.textContent='🎲 '+(Math.floor(Math.random()*6)+1); t++;
+  const spin=setInterval(()=>{ soundDiceTick(); r.textContent='🎲 '+(Math.floor(Math.random()*6)+1); t++;
     if(t>8){ clearInterval(spin); const roll=Math.floor(Math.random()*6)+1; r.textContent='🎲 '+roll; movePiece(roll); }
   },70);
 }
 function movePiece(steps){
   const team=teams[currentTurn];
-  let remaining=steps;
-  function stepMove(){
-    if(remaining<=0){
-      setTimeout(()=>{
-        if(team.pos>=NUM_SQUARES){ endGame(team); return; }
-        resolveSquare(boardMeta[team.pos-1], team);
-      },200);
-      return;
-    }
-    team.pos=Math.min(team.pos+1, NUM_SQUARES);
-    placePieces();
-    bouncePiece(team);
+  animateSteps(team, steps, ()=>{
+    setTimeout(()=>{
+      if(team.pos>=NUM_SQUARES){ endGame(team); return; }
+      resolveSquare(boardMeta[team.pos-1], team);
+    },200);
+  });
+}
+function animateSteps(team, delta, onDone){
+  const dir = delta>=0 ? 1 : -1; let remaining=Math.abs(delta);
+  function step(){
+    if(remaining<=0){ onDone(); return; }
+    team.pos = Math.max(0, Math.min(team.pos+dir, NUM_SQUARES));
+    placePieces(); bouncePiece(team);
+    if(dir>0) soundStep(); else soundBack();
     remaining--;
-    if(team.pos>=NUM_SQUARES){ setTimeout(()=>{ endGame(team); },400); return; }
-    setTimeout(stepMove,380);
+    if(team.pos>=NUM_SQUARES){ setTimeout(onDone,400); return; }
+    setTimeout(step,380);
   }
-  stepMove();
+  step();
 }
 function bouncePiece(team){
   const id = team.pos<=0?'pieces-start':(team.pos>=NUM_SQUARES?'pieces-goal':'pieces-'+team.pos);
@@ -295,12 +337,12 @@ function bouncePiece(team){
   setTimeout(()=>{ tok.style.transform='scale(1)'; },150);
 }
 function resolveSquare(sq, team){
-  if(sq.type==='challenge'){ openChallenge(team); }
-  else if(sq.type==='bonus'){ showSpecial(team,'⭐ BONUS! Maju 2 langkah!',()=>{team.pos=Math.min(team.pos+2,NUM_SQUARES);placePieces();nextTurn();}); }
-  else if(sq.type==='kesempatan'){ showSpecial(team,'🎁 KESEMPATAN! Lempar dadu sekali lagi!',()=>{document.getElementById('diceBtn').disabled=false;document.getElementById('diceResult').textContent='';}); }
-  else if(sq.type==='mundur'){ showSpecial(team,'⏪ MUNDUR! Mundur 2 langkah!',()=>{team.pos=Math.max(team.pos-2,0);placePieces();nextTurn();}); }
-  else if(sq.type==='ulangi'){ showSpecial(team,'🔄 ULANGI! Main sekali lagi!',()=>{document.getElementById('diceBtn').disabled=false;document.getElementById('diceResult').textContent='';}); }
-  else if(sq.type==='istirahat'){ showSpecial(team,'😴 ISTIRAHAT! Lewati giliran berikutnya',()=>{team.skip=true;nextTurn();}); }
+  if(sq.type==='challenge'){ soundChallenge(); openChallenge(team); }
+  else if(sq.type==='bonus'){ soundBonus(); showSpecial(team,'⭐ BONUS! Maju 2 langkah!',()=>{ animateSteps(team,2,()=>nextTurn()); }); }
+  else if(sq.type==='kesempatan'){ soundKesempatan(); showSpecial(team,'🎁 KESEMPATAN! Lempar dadu sekali lagi!',()=>{document.getElementById('diceBtn').disabled=false;document.getElementById('diceResult').textContent='';}); }
+  else if(sq.type==='mundur'){ soundMundur(); showSpecial(team,'⏪ MUNDUR! Mundur 2 langkah!',()=>{ animateSteps(team,-2,()=>nextTurn()); }); }
+  else if(sq.type==='ulangi'){ soundUlangi(); showSpecial(team,'🔄 ULANGI! Main sekali lagi!',()=>{document.getElementById('diceBtn').disabled=false;document.getElementById('diceResult').textContent='';}); }
+  else if(sq.type==='istirahat'){ soundIstirahat(); showSpecial(team,'😴 ISTIRAHAT! Lewati giliran berikutnya',()=>{team.skip=true;nextTurn();}); }
   else nextTurn();
 }
 function showSpecial(team,text,after){
@@ -401,6 +443,7 @@ function closeChallenge(){ document.getElementById('modalBg').classList.remove('
 
 /* ============ WIN ============ */
 function endGame(team){
+  soundWin();
   document.getElementById('winTeamText').textContent = `「${team.name} no kachi desu!」`;
   showScreen('winScreen');
 }
