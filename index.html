@@ -3,594 +3,760 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Hiragana Sugoroku</title>
+<title>ひらがなすごろく - Hiragana Sugoroku</title>
 
 <style>
-* {
-    box-sizing: border-box;
+*{box-sizing:border-box}
+
+body{
+    margin:0;
+    font-family:Arial,"Noto Sans JP",sans-serif;
+    background:#fdf5f7;
+    color:#303030;
 }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #fff5f7;
-    color: #333;
+button{
+    font-family:inherit;
+    cursor:pointer;
 }
 
-button {
-    cursor: pointer;
-    border: none;
+.page{
+    display:none;
+    min-height:100vh;
 }
 
-/* HALAMAN */
-.page {
-    display: none;
-    min-height: 100vh;
+.page.active{
+    display:flex;
 }
 
-.page.active {
-    display: flex;
+/* ================= COVER ================= */
+
+#cover{
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    background:
+        radial-gradient(circle at 10% 15%,#ffdce7 0 5%,transparent 6%),
+        radial-gradient(circle at 90% 20%,#dceeff 0 5%,transparent 6%),
+        linear-gradient(135deg,#fff7f9,#eef7ff);
+    padding:25px;
 }
 
-/* =====================
-   HALAMAN AWAL
-===================== */
-
-#home {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
+.cover-box{
+    width:min(800px,95%);
+    background:white;
+    border-radius:32px;
+    padding:55px 30px;
+    box-shadow:0 15px 40px rgba(0,0,0,.12);
 }
 
-.home-box {
-    background: white;
-    padding: 50px 30px;
-    border-radius: 30px;
-    width: 90%;
-    max-width: 700px;
-    box-shadow: 0 10px 30px #ddd;
+.decor{
+    font-size:45px;
 }
 
-.flower {
-    font-size: 50px;
+.cover-title{
+    font-size:clamp(42px,8vw,78px);
+    color:#d45b7b;
+    font-weight:800;
+    margin:15px 0 5px;
 }
 
-h1 {
-    font-size: 55px;
-    color: #d85b7b;
-    margin: 15px 0;
+.cover-subtitle{
+    font-size:clamp(20px,4vw,30px);
+    letter-spacing:3px;
+    color:#555;
 }
 
-.subtitle {
-    font-size: 22px;
-    margin-bottom: 35px;
+.cover-tagline{
+    font-size:22px;
+    margin:25px 0 35px;
 }
 
-.start-button {
-    background: #d85b7b;
-    color: white;
-    font-size: 24px;
-    font-weight: bold;
-    padding: 15px 40px;
-    border-radius: 15px;
+.primary{
+    background:#d45b7b;
+    color:white;
+    border:0;
+    border-radius:15px;
+    padding:15px 40px;
+    font-size:22px;
+    font-weight:bold;
+    box-shadow:0 5px 0 #ad4561;
 }
 
-/* =====================
-   PILIH KELOMPOK
-===================== */
-
-#setup {
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+.primary:active{
+    transform:translateY(3px);
+    box-shadow:0 2px 0 #ad4561;
 }
 
-.setup-box {
-    background: white;
-    padding: 35px;
-    border-radius: 25px;
-    width: 90%;
-    max-width: 700px;
-    text-align: center;
-    box-shadow: 0 10px 30px #ddd;
+/* ================= RULES ================= */
+
+#rules{
+    justify-content:center;
+    align-items:center;
+    padding:25px;
 }
 
-.setup-box h2 {
-    color: #d85b7b;
-    font-size: 32px;
+.rules-box{
+    width:min(800px,95%);
+    background:white;
+    border-radius:25px;
+    padding:35px;
+    box-shadow:0 10px 35px rgba(0,0,0,.1);
 }
 
-.team-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin: 25px 0;
+.section-title{
+    color:#d45b7b;
+    text-align:center;
+    font-size:34px;
+    margin-top:0;
 }
 
-.team-buttons button {
-    background: #f4f4f4;
-    border: 3px solid #ddd;
-    padding: 15px;
-    border-radius: 12px;
-    font-size: 18px;
+.rules-list{
+    padding-left:25px;
+    line-height:1.8;
+    font-size:18px;
 }
 
-.team-buttons button.selected {
-    background: #ffdce5;
-    border-color: #d85b7b;
+.rules-note{
+    background:#fff3d5;
+    border-left:5px solid #e4b84e;
+    padding:15px;
+    border-radius:10px;
+    margin:20px 0;
 }
 
-.play-button {
-    background: #5b86c5;
-    color: white;
-    padding: 15px 35px;
-    font-size: 21px;
-    border-radius: 15px;
+.rules-buttons{
+    text-align:center;
+    margin-top:25px;
 }
 
-/* =====================
-   GAME
-===================== */
+/* ================= SETUP ================= */
 
-#game {
-    flex-direction: column;
-    padding: 15px;
+#setup{
+    justify-content:center;
+    align-items:center;
+    padding:25px;
 }
 
-.header {
-    background: white;
-    border-radius: 15px;
-    padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 4px 15px #ddd;
+.setup-box{
+    width:min(800px,95%);
+    background:white;
+    border-radius:25px;
+    padding:35px;
+    text-align:center;
+    box-shadow:0 10px 35px rgba(0,0,0,.1);
 }
 
-.turn {
-    text-align: center;
-    font-size: 25px;
-    font-weight: bold;
-    color: #d85b7b;
-    margin-bottom: 10px;
+.team-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+    margin:25px 0;
 }
 
-.scores {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 7px;
+.team-select{
+    border:3px solid #e5e5e5;
+    background:#fafafa;
+    border-radius:13px;
+    padding:15px 5px;
+    font-size:17px;
+    font-weight:bold;
 }
 
-.score {
-    background: #f3f3f3;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-weight: bold;
+.team-select:hover,
+.team-select.selected{
+    border-color:#d45b7b;
+    background:#ffe6ed;
 }
 
-/* LAYOUT GAME */
-
-.game-layout {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 15px;
+#startGame{
+    background:#5c84bd;
+    color:white;
+    padding:15px 35px;
+    border-radius:14px;
+    font-size:21px;
+    font-weight:bold;
 }
 
-/* PAPAN */
-
-.board-container {
-    background: white;
-    padding: 15px;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px #ddd;
+#startGame:disabled{
+    opacity:.4;
+    cursor:not-allowed;
 }
 
-.board {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 7px;
+/* ================= GAME ================= */
+
+#game{
+    flex-direction:column;
+    padding:12px;
+    background:#f7f9fc;
 }
 
-.cell {
-    min-height: 80px;
-    border: 2px solid #ddd;
-    border-radius: 10px;
-    background: #fff;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+.topbar{
+    background:white;
+    border-radius:16px;
+    padding:12px 16px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
+    margin-bottom:12px;
 }
 
-.cell-number {
-    position: absolute;
-    top: 4px;
-    left: 6px;
-    font-size: 12px;
-    color: #999;
+.current-turn{
+    text-align:center;
+    font-size:24px;
+    font-weight:bold;
+    color:#d45b7b;
+    margin-bottom:10px;
 }
 
-.cell-icon {
-    font-size: 25px;
+.score-row{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    justify-content:center;
 }
 
-.start {
-    background: #e2f5e2;
-    border-color: #69aa69;
+.score-item{
+    background:#f1f1f1;
+    border-radius:8px;
+    padding:7px 10px;
+    font-size:13px;
+    font-weight:bold;
 }
 
-.goal {
-    background: #ffe0e8;
-    border-color: #d85b7b;
+.score-item.active-team{
+    outline:3px solid #d45b7b;
+    background:#ffe6ed;
 }
 
-.special {
-    background: #fff1c9;
-    border-color: #e1b64c;
+.game-main{
+    display:grid;
+    grid-template-columns:minmax(0,2fr) minmax(300px,1fr);
+    gap:12px;
+    flex:1;
 }
 
-.pawns {
-    display: flex;
-    gap: 2px;
-    flex-wrap: wrap;
-    justify-content: center;
+.board-wrap{
+    background:white;
+    border-radius:20px;
+    padding:15px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
 }
 
-.pawn {
-    font-size: 18px;
+.board-heading{
+    text-align:center;
+    font-weight:bold;
+    color:#777;
+    margin-bottom:10px;
 }
 
-/* =====================
-   PANEL KANAN
-===================== */
-
-.panel {
-    background: white;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px #ddd;
+.board{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:6px;
 }
 
-.dice {
-    text-align: center;
+.cell{
+    min-height:78px;
+    border:2px solid #dedede;
+    border-radius:10px;
+    background:white;
+    position:relative;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    text-align:center;
 }
 
-.dice-face {
-    font-size: 70px;
-    margin: 10px;
+.cell-number{
+    position:absolute;
+    top:3px;
+    left:5px;
+    color:#999;
+    font-size:11px;
 }
 
-.dice-button {
-    width: 100%;
-    background: #5b86c5;
-    color: white;
-    padding: 15px;
-    border-radius: 12px;
-    font-size: 22px;
-    font-weight: bold;
+.cell.normal::after{
+    content:"🌸";
+    font-size:22px;
 }
 
-.dice-button:disabled {
-    opacity: 0.5;
+.cell.start{
+    background:#e7f6e7;
+    border-color:#70ad70;
 }
 
-.question-box {
-    margin-top: 15px;
-    background: #fff5f7;
-    border-radius: 15px;
-    padding: 15px;
-    text-align: center;
+.cell.goal{
+    background:#ffe0e9;
+    border-color:#d45b7b;
 }
 
-.question-type {
-    color: #d85b7b;
-    font-weight: bold;
-    font-size: 14px;
+.cell.special{
+    background:#fff2cf;
+    border-color:#dfb550;
 }
 
-.question-text {
-    font-size: 19px;
-    font-weight: bold;
-    margin: 10px;
+.special-label{
+    font-size:11px;
+    font-weight:bold;
+    margin-top:3px;
 }
 
-.hiragana {
-    font-size: 65px;
-    font-weight: bold;
-    margin: 15px;
+.pawns{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:1px;
+    margin-top:3px;
 }
 
-.answers {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
+.pawn{
+    font-size:19px;
+    line-height:20px;
 }
 
-.answer {
-    background: white;
-    border: 2px solid #ddd;
-    border-radius: 10px;
-    padding: 12px;
-    font-size: 18px;
+/* ================= RIGHT PANEL ================= */
+
+.side{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
 }
 
-.answer:hover {
-    background: #eef5ff;
+.dice-box,
+.challenge-box{
+    background:white;
+    border-radius:20px;
+    padding:17px;
+    box-shadow:0 4px 15px rgba(0,0,0,.08);
 }
 
-.answer:disabled {
-    cursor: default;
+.dice-box{
+    text-align:center;
 }
 
-.result {
-    font-size: 22px;
-    font-weight: bold;
-    margin: 15px;
+.dice-label{
+    font-size:14px;
+    color:#777;
+    font-weight:bold;
 }
 
-.next {
-    width: 100%;
-    background: #d85b7b;
-    color: white;
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 18px;
+.dice-face{
+    font-size:62px;
+    margin:5px;
 }
 
-/* =====================
-   MENANG
-===================== */
-
-#winner {
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
+.roll{
+    width:100%;
+    background:#5c84bd;
+    color:white;
+    border-radius:12px;
+    padding:13px;
+    font-size:21px;
+    font-weight:bold;
 }
 
-.winner-box {
-    background: white;
-    padding: 50px 30px;
-    border-radius: 30px;
-    width: 90%;
-    max-width: 600px;
-    box-shadow: 0 10px 30px #ddd;
+.roll:disabled{
+    opacity:.45;
+    cursor:not-allowed;
 }
 
-.trophy {
-    font-size: 80px;
+.challenge-box{
+    flex:1;
+    text-align:center;
 }
 
-.winner-box h2 {
-    color: #d85b7b;
-    font-size: 40px;
+.challenge-type{
+    display:inline-block;
+    background:#ffe2ea;
+    color:#c54e6d;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:12px;
+    font-weight:bold;
+    letter-spacing:1px;
 }
 
-.winner-name {
-    font-size: 30px;
-    font-weight: bold;
-    margin: 20px;
+.challenge-title{
+    font-size:20px;
+    font-weight:bold;
+    margin:12px 0;
 }
 
-/* HP */
+.big-hira{
+    font-size:65px;
+    font-weight:bold;
+    margin:12px 0;
+}
 
-@media(max-width: 800px) {
+.choices{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+}
 
-    .game-layout {
-        grid-template-columns: 1fr;
+.choice{
+    background:#fafafa;
+    border:2px solid #ddd;
+    border-radius:10px;
+    padding:11px 6px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+.choice:hover{
+    background:#edf5ff;
+    border-color:#5c84bd;
+}
+
+.choice:disabled{
+    cursor:default;
+}
+
+.correct{
+    background:#e5f7e5 !important;
+    border-color:#65aa65 !important;
+}
+
+.wrong{
+    background:#ffe5e5 !important;
+    border-color:#d66 !important;
+}
+
+.feedback{
+    margin-top:12px;
+    font-size:20px;
+    font-weight:bold;
+}
+
+.answer-info{
+    margin:8px 0;
+    font-size:15px;
+}
+
+.next{
+    width:100%;
+    background:#d45b7b;
+    color:white;
+    border-radius:11px;
+    padding:12px;
+    font-size:18px;
+    font-weight:bold;
+    margin-top:8px;
+}
+
+/* ================= SUMMARY ================= */
+
+#summary{
+    justify-content:center;
+    align-items:center;
+    padding:25px;
+}
+
+.summary-box{
+    width:min(850px,95%);
+    background:white;
+    border-radius:25px;
+    padding:35px;
+    box-shadow:0 10px 35px rgba(0,0,0,.1);
+}
+
+.winner-banner{
+    text-align:center;
+    background:#fff2d0;
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:20px;
+}
+
+.trophy{
+    font-size:60px;
+}
+
+.winner-banner h2{
+    color:#d45b7b;
+    margin:8px;
+    font-size:32px;
+}
+
+.summary-table{
+    width:100%;
+    border-collapse:collapse;
+    margin:20px 0;
+}
+
+.summary-table th,
+.summary-table td{
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:center;
+}
+
+.summary-table th{
+    background:#f4e7eb;
+}
+
+.summary-buttons{
+    text-align:center;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:900px){
+
+    .game-main{
+        grid-template-columns:1fr;
     }
 
-    .board {
-        grid-template-columns: repeat(5, 1fr);
+    .team-grid{
+        grid-template-columns:repeat(3,1fr);
     }
 
-    h1 {
-        font-size: 40px;
+    .board{
+        grid-template-columns:repeat(6,1fr);
     }
 }
 
-@media(max-width: 500px) {
+@media(max-width:600px){
 
-    .board {
-        grid-template-columns: repeat(4, 1fr);
+    .team-grid{
+        grid-template-columns:repeat(2,1fr);
     }
 
-    .team-buttons {
-        grid-template-columns: repeat(2, 1fr);
+    .board{
+        grid-template-columns:repeat(5,1fr);
     }
 
-    .cell {
-        min-height: 65px;
+    .cell{
+        min-height:62px;
+    }
+
+    .pawn{
+        font-size:15px;
     }
 }
 </style>
 </head>
 
-
 <body>
 
+<!-- ==================================================
+     COVER
+================================================== -->
 
-<!-- =========================
-     HOME
-========================= -->
+<section id="cover" class="page active">
 
-<div id="home" class="page active">
+    <div class="cover-box">
 
-    <div class="home-box">
-
-        <div class="flower">
-            🌸 ⛩️ 🌸
+        <div class="decor">
+            🌸 ⛩️ 🗻 🌸
         </div>
 
-        <h1>
+        <div class="cover-title">
             ひらがなすごろく
-        </h1>
+        </div>
 
-        <div class="subtitle">
+        <div class="cover-subtitle">
             HIRAGANA SUGOROKU
-            <br><br>
+        </div>
+
+        <div class="cover-tagline">
             ひらがなを たのしく おぼえよう！
         </div>
 
-        <button
-            class="start-button"
-            onclick="goSetup()">
+        <button class="primary" onclick="showPage('rules')">
             ▶ はじめる
         </button>
 
     </div>
 
-</div>
+</section>
 
 
-<!-- =========================
-     SETUP
-========================= -->
+<!-- ==================================================
+     RULES
+================================================== -->
 
-<div id="setup" class="page">
+<section id="rules" class="page">
 
-    <div class="setup-box">
+    <div class="rules-box">
 
-        <h2>
-            チームを えらんでください
+        <h2 class="section-title">
+            📖 CARA BERMAIN
         </h2>
 
-        <p>
-            Pilih jumlah kelompok
-        </p>
+        <ol class="rules-list">
 
-        <div class="team-buttons">
+            <li>
+                Siswa dibagi menjadi beberapa kelompok.
+            </li>
 
-            <button onclick="chooseTeams(2)">
-                2 kelompok
-            </button>
+            <li>
+                Setiap kelompok memiliki satu bidak.
+            </li>
 
-            <button onclick="chooseTeams(3)">
-                3 kelompok
-            </button>
+            <li>
+                Kelompok bermain secara bergantian.
+            </li>
 
-            <button onclick="chooseTeams(4)">
-                4 kelompok
-            </button>
+            <li>
+                Klik tombol 🎲 DADU untuk mendapatkan angka 1–6.
+            </li>
 
-            <button onclick="chooseTeams(5)">
-                5 kelompok
-            </button>
+            <li>
+                Bidak bergerak sesuai angka dadu.
+            </li>
 
-            <button onclick="chooseTeams(6)">
-                6 kelompok
-            </button>
+            <li>
+                Setiap kotak memiliki tantangan yang berbeda.
+            </li>
 
-            <button onclick="chooseTeams(7)">
-                7 kelompok
-            </button>
+            <li>
+                Jika jawaban benar, kelompok mendapat <b>+10 poin</b>.
+            </li>
 
-            <button onclick="chooseTeams(8)">
-                8 kelompok
-            </button>
+            <li>
+                Jika jawaban salah, kelompok <b>mundur 1 kotak</b>.
+            </li>
 
-            <button onclick="chooseTeams(9)">
-                9 kelompok
-            </button>
+            <li>
+                Kotak khusus dapat memberikan bonus, mundur, atau kesempatan melempar dadu lagi.
+            </li>
 
-            <button onclick="chooseTeams(10)">
-                10 kelompok
+            <li>
+                Kelompok yang pertama mencapai <b>GOAL</b> menjadi pemenang.
+            </li>
+
+        </ol>
+
+        <div class="rules-note">
+            <b>💡 Catatan guru:</b><br>
+            Game dimainkan bersama menggunakan proyektor.
+            Guru atau perwakilan kelompok cukup mengklik tombol pada layar.
+            Siswa tidak perlu menggunakan HP.
+        </div>
+
+        <div style="text-align:center">
+
+            <button class="primary" onclick="showPage('setup')">
+                ▶ ゲームスタート
             </button>
 
         </div>
 
-        <button
-            id="playButton"
-            class="play-button"
-            onclick="startGame()"
-            disabled>
-            ▶ ゲームスタート
+    </div>
+
+</section>
+
+
+<!-- ==================================================
+     SETUP
+================================================== -->
+
+<section id="setup" class="page">
+
+    <div class="setup-box">
+
+        <h2 class="section-title">
+            👥 PILIH JUMLAH KELOMPOK
+        </h2>
+
+        <p>
+            Pilih jumlah kelompok yang akan bermain.
+        </p>
+
+        <div class="team-grid">
+
+            <button class="team-select" onclick="selectTeam(2)">2 Kelompok</button>
+            <button class="team-select" onclick="selectTeam(3)">3 Kelompok</button>
+            <button class="team-select" onclick="selectTeam(4)">4 Kelompok</button>
+            <button class="team-select" onclick="selectTeam(5)">5 Kelompok</button>
+            <button class="team-select" onclick="selectTeam(6)">6 Kelompok</button>
+            <button class="team-select" onclick="selectTeam(7)">7 Kelompok</button>
+            <button class="team-select" onclick="selectTeam(8)">8 Kelompok</button>
+            <button class="team-select" onclick="selectTeam(9)">9 Kelompok</button>
+            <button class="team-select" onclick="selectTeam(10)">10 Kelompok</button>
+
+        </div>
+
+        <button id="startGame" onclick="startGame()" disabled>
+            ▶ MULAI PERMAINAN
         </button>
 
     </div>
 
-</div>
+</section>
 
 
-<!-- =========================
+<!-- ==================================================
      GAME
-========================= -->
+================================================== -->
 
-<div id="game" class="page">
+<section id="game" class="page">
 
-    <div class="header">
+    <div class="topbar">
 
-        <div
-            id="turnText"
-            class="turn">
-            チーム1の ばんです！
+        <div id="turn" class="current-turn">
+            Kelompok 1 mendapat giliran
         </div>
 
-        <div
-            id="scores"
-            class="scores">
-        </div>
+        <div id="scoreRow" class="score-row"></div>
 
     </div>
 
 
-    <div class="game-layout">
+    <div class="game-main">
 
+        <!-- BOARD -->
 
-        <!-- PAPAN -->
+        <div class="board-wrap">
 
-        <div class="board-container">
-
-            <div
-                id="board"
-                class="board">
+            <div class="board-heading">
+                🌸 PAPAN HIRAGANA SUGOROKU 🌸
             </div>
+
+            <div id="board" class="board"></div>
 
         </div>
 
 
-        <!-- PANEL -->
+        <!-- SIDE -->
 
-        <div class="panel">
+        <div class="side">
 
-            <div class="dice">
+            <div class="dice-box">
 
-                <div>
-                    🎲 DADU
+                <div class="dice-label">
+                    GILIRAN DADU
                 </div>
 
-                <div
-                    id="diceFace"
-                    class="dice-face">
+                <div id="diceFace" class="dice-face">
                     🎲
                 </div>
 
                 <button
-                    id="diceButton"
-                    class="dice-button"
+                    id="rollButton"
+                    class="roll"
                     onclick="rollDice()">
+
                     🎲 DADU
+
                 </button>
 
             </div>
 
 
-            <div
-                id="questionBox"
-                class="question-box">
+            <div id="challenge" class="challenge-box">
 
-                <div class="question-type">
-                    GAME
+                <div class="challenge-type">
+                    SIAP?
                 </div>
 
-                <div class="question-text">
-                    DADUを おしてください！
+                <div class="challenge-title">
+                    Klik tombol DADU untuk mulai.
                 </div>
 
                 <p>
-                    Tekan DADU untuk mulai.
+                    Setiap kotak akan memberikan tantangan berbeda.
                 </p>
 
             </div>
@@ -599,63 +765,98 @@ h1 {
 
     </div>
 
-</div>
+</section>
 
 
-<!-- =========================
-     WINNER
-========================= -->
+<!-- ==================================================
+     SUMMARY
+================================================== -->
 
-<div id="winner" class="page">
+<section id="summary" class="page">
 
-    <div class="winner-box">
+    <div class="summary-box">
 
-        <div class="trophy">
-            🏆
+        <div class="winner-banner">
+
+            <div class="trophy">
+                🏆
+            </div>
+
+            <h2>
+                おめでとうございます！
+            </h2>
+
+            <div id="winnerText"></div>
+
+            <p>
+                Selamat! Kamu berhasil menyelesaikan
+                <b>Hiragana Sugoroku</b>!
+            </p>
+
         </div>
 
-        <h2>
-            おめでとう！
+
+        <h2 class="section-title">
+            📊 REKAP HASIL PERMAINAN
         </h2>
 
-        <div
-            id="winnerName"
-            class="winner-name">
+        <table class="summary-table">
+
+            <thead>
+
+                <tr>
+                    <th>Posisi</th>
+                    <th>Kelompok</th>
+                    <th>Poin</th>
+                    <th>Posisi Bidak</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="summaryBody"></tbody>
+
+        </table>
+
+
+        <div class="summary-buttons">
+
+            <button class="primary" onclick="location.reload()">
+                🔄 もういちど あそぶ
+            </button>
+
         </div>
-
-        <p>
-            HIRAGANA MASTER！
-        </p>
-
-        <button
-            class="start-button"
-            onclick="location.reload()">
-            もういちど あそぶ
-        </button>
 
     </div>
 
-</div>
+</section>
 
 
 <script>
 
-/* =========================
-   DATA
-========================= */
+/* ==================================================
+   VARIABEL
+================================================== */
 
-var teamCount = 0;
-var currentTeam = 0;
+var jumlahKelompok = 0;
 
-var positions = [];
-var scores = [];
+var kelompokSekarang = 0;
 
-var rolled = false;
+var posisi = [];
 
-var questionNumber = 0;
+var poin = [];
+
+var sudahDadu = false;
+
+var pertanyaanSekarang = null;
+
+var nomorPertanyaan = 0;
 
 
-var icons = [
+/* ==================================================
+   BIDAK
+================================================== */
+
+var bidak = [
     "🌸",
     "🗻",
     "⛩️",
@@ -669,280 +870,351 @@ var icons = [
 ];
 
 
-var questions = [
+/* ==================================================
+   SOAL
+================================================== */
+
+var soal = [
+
+    /* READ */
 
     {
-        type: "READ",
-        text: "Bacalah huruf berikut.",
-        hira: "あ",
-        choices: ["a", "i", "u", "e"],
-        answer: "a"
+        type:"READ",
+        text:"Bacalah hiragana berikut!",
+        display:"さ",
+        choices:["sa","shi","su","se"],
+        answer:"sa"
     },
 
     {
-        type: "READ",
-        text: "Bacalah huruf berikut.",
-        hira: "か",
-        choices: ["ka", "ki", "ku", "ke"],
-        answer: "ka"
+        type:"READ",
+        text:"Bacalah hiragana berikut!",
+        display:"き",
+        choices:["ka","ki","ku","ke"],
+        answer:"ki"
     },
 
     {
-        type: "READ",
-        text: "Bacalah huruf berikut.",
-        hira: "し",
-        choices: ["sa", "shi", "su", "se"],
-        answer: "shi"
+        type:"READ",
+        text:"Bacalah hiragana berikut!",
+        display:"ぬ",
+        choices:["na","nu","ne","no"],
+        answer:"nu"
     },
 
     {
-        type: "READ",
-        text: "Bacalah huruf berikut.",
-        hira: "と",
-        choices: ["ta", "chi", "tsu", "to"],
-        answer: "to"
+        type:"READ",
+        text:"Bacalah hiragana berikut!",
+        display:"ほ",
+        choices:["ha","hi","fu","ho"],
+        answer:"ho"
+    },
+
+    /* FIND */
+
+    {
+        type:"FIND",
+        text:"Mana huruf hiragana untuk bunyi 'me'?",
+        display:"me",
+        choices:["ぬ","め","ね","も"],
+        answer:"め"
     },
 
     {
-        type: "READ",
-        text: "Bacalah huruf berikut.",
-        hira: "ね",
-        choices: ["na", "ni", "nu", "ne"],
-        answer: "ne"
+        type:"FIND",
+        text:"Mana huruf hiragana untuk bunyi 'shi'?",
+        display:"shi",
+        choices:["さ","し","す","せ"],
+        answer:"し"
     },
 
     {
-        type: "READ",
-        text: "Bacalah huruf berikut.",
-        hira: "ふ",
-        choices: ["ha", "hi", "fu", "he"],
-        answer: "fu"
+        type:"FIND",
+        text:"Mana huruf hiragana untuk bunyi 'yo'?",
+        display:"yo",
+        choices:["や","ゆ","よ","ら"],
+        answer:"よ"
     },
 
     {
-        type: "FIND",
-        text: "Pilih hiragana untuk bunyi berikut.",
-        hira: "a",
-        choices: ["あ", "い", "う", "え"],
-        answer: "あ"
+        type:"FIND",
+        text:"Mana huruf hiragana untuk bunyi 'mu'?",
+        display:"mu",
+        choices:["ま","み","む","め"],
+        answer:"む"
+    },
+
+    /* MATCH */
+
+    {
+        type:"MATCH",
+        text:"Pilih romaji yang tepat!",
+        display:"ち",
+        choices:["ta","chi","tsu","te"],
+        answer:"chi"
     },
 
     {
-        type: "FIND",
-        text: "Pilih hiragana untuk bunyi berikut.",
-        hira: "shi",
-        choices: ["さ", "し", "す", "せ"],
-        answer: "し"
+        type:"MATCH",
+        text:"Pilih romaji yang tepat!",
+        display:"ふ",
+        choices:["ha","hi","fu","he"],
+        answer:"fu"
     },
 
     {
-        type: "FIND",
-        text: "Pilih hiragana untuk bunyi berikut.",
-        hira: "mu",
-        choices: ["ま", "み", "む", "め"],
-        answer: "む"
+        type:"MATCH",
+        text:"Pilih romaji yang tepat!",
+        display:"り",
+        choices:["ra","ri","ru","re"],
+        answer:"ri"
     },
 
     {
-        type: "FIND",
-        text: "Pilih hiragana untuk bunyi berikut.",
-        hira: "yo",
-        choices: ["や", "ゆ", "よ", "わ"],
-        answer: "よ"
+        type:"MATCH",
+        text:"Pilih romaji yang tepat!",
+        display:"む",
+        choices:["ma","mi","mu","me"],
+        answer:"mu"
+    },
+
+    /* MAKE */
+
+    {
+        type:"MAKE",
+        text:"Susun hiragana berikut menjadi kata yang benar!",
+        display:"さ・く・ら",
+        choices:["さくら","さから","すくら","さけら"],
+        answer:"さくら"
     },
 
     {
-        type: "MATCH",
-        text: "Pasangkan hiragana dengan romaji.",
-        hira: "さ",
-        choices: ["sa", "shi", "su", "so"],
-        answer: "sa"
+        type:"MAKE",
+        text:"Susun hiragana berikut menjadi kata yang benar!",
+        display:"ね・こ",
+        choices:["ねこ","ねか","にこ","ぬこ"],
+        answer:"ねこ"
     },
 
     {
-        type: "MATCH",
-        text: "Pasangkan hiragana dengan romaji.",
-        hira: "ち",
-        choices: ["ta", "chi", "tsu", "te"],
-        answer: "chi"
+        type:"MAKE",
+        text:"Susun hiragana berikut menjadi kata yang benar!",
+        display:"す・し",
+        choices:["すし","さし","すせ","しす"],
+        answer:"すし"
     },
 
     {
-        type: "MATCH",
-        text: "Pasangkan hiragana dengan romaji.",
-        hira: "め",
-        choices: ["ma", "mi", "mu", "me"],
-        answer: "me"
+        type:"MAKE",
+        text:"Susun hiragana berikut menjadi kata yang benar!",
+        display:"や・ま",
+        choices:["やま","ゆま","やみ","やむ"],
+        answer:"やま"
     },
 
     {
-        type: "MATCH",
-        text: "Pasangkan hiragana dengan romaji.",
-        hira: "り",
-        choices: ["ra", "ri", "ru", "re"],
-        answer: "ri"
+        type:"MAKE",
+        text:"Susun hiragana berikut menjadi kata yang benar!",
+        display:"み・ず",
+        choices:["みず","みずう","まぞ","みせ"],
+        answer:"みず"
+    },
+
+    /* CHALLENGE */
+
+    {
+        type:"CHALLENGE",
+        text:"Bacalah 3 hiragana berikut dengan cepat!",
+        display:"あ　き　ぬ",
+        choices:["a - ki - nu","a - ke - ne","i - ki - nu","a - ku - no"],
+        answer:"a - ki - nu"
     },
 
     {
-        type: "READ",
-        text: "Bacalah huruf berikut.",
-        hira: "が",
-        choices: ["ga", "ka", "gu", "go"],
-        answer: "ga"
+        type:"CHALLENGE",
+        text:"Bacalah 3 hiragana berikut dengan cepat!",
+        display:"さ　し　す",
+        choices:["sa - shi - su","sa - su - se","shi - sa - su","su - shi - sa"],
+        answer:"sa - shi - su"
     },
 
     {
-        type: "READ",
-        text: "Bacalah huruf berikut.",
-        hira: "ぱ",
-        choices: ["ba", "pa", "ha", "pi"],
-        answer: "pa"
+        type:"CHALLENGE",
+        text:"Bacalah 3 hiragana berikut dengan cepat!",
+        display:"た　ち　つ",
+        choices:["ta - chi - tsu","ta - te - to","chi - tsu - te","ta - tsu - to"],
+        answer:"ta - chi - tsu"
     },
 
     {
-        type: "READ",
-        text: "Bacalah huruf berikut.",
-        hira: "きゃ",
-        choices: ["kya", "kyu", "sha", "ka"],
-        answer: "kya"
+        type:"READ",
+        text:"Bacalah hiragana berikut!",
+        display:"が",
+        choices:["ga","ka","gu","go"],
+        answer:"ga"
     },
 
     {
-        type: "READ",
-        text: "Bacalah huruf berikut.",
-        hira: "しゅ",
-        choices: ["sha", "shu", "sho", "su"],
-        answer: "shu"
+        type:"READ",
+        text:"Bacalah hiragana berikut!",
+        display:"ぱ",
+        choices:["ba","pa","ha","pi"],
+        answer:"pa"
     },
 
     {
-        type: "READ",
-        text: "Bacalah huruf berikut.",
-        hira: "ちょ",
-        choices: ["cha", "chu", "cho", "to"],
-        answer: "cho"
+        type:"READ",
+        text:"Bacalah hiragana berikut!",
+        display:"きゃ",
+        choices:["kya","kyu","sha","ka"],
+        answer:"kya"
+    },
+
+    {
+        type:"READ",
+        text:"Bacalah hiragana berikut!",
+        display:"しゅ",
+        choices:["sha","shu","sho","su"],
+        answer:"shu"
+    },
+
+    {
+        type:"READ",
+        text:"Bacalah hiragana berikut!",
+        display:"ちょ",
+        choices:["cha","chu","cho","to"],
+        answer:"cho"
     }
 
 ];
 
 
-/* =========================
+/* ==================================================
    PINDAH HALAMAN
-========================= */
+================================================== */
 
-function showPage(id) {
+function showPage(id){
 
-    var pages = document.querySelectorAll(".page");
+    var pages =
+        document.querySelectorAll(".page");
 
-    for (var i = 0; i < pages.length; i++) {
+    for(var i=0;i<pages.length;i++){
+
         pages[i].classList.remove("active");
+
     }
 
     document.getElementById(id).classList.add("active");
 }
 
 
-function goSetup() {
+/* ==================================================
+   PILIH KELOMPOK
+================================================== */
 
-    showPage("setup");
+function selectTeam(jumlah){
 
-}
-
-
-/* =========================
-   PILIH JUMLAH KELOMPOK
-========================= */
-
-function chooseTeams(number) {
-
-    teamCount = number;
+    jumlahKelompok = jumlah;
 
     var buttons =
-        document.querySelectorAll(".team-buttons button");
+        document.querySelectorAll(".team-select");
 
-    for (var i = 0; i < buttons.length; i++) {
+    for(var i=0;i<buttons.length;i++){
+
         buttons[i].classList.remove("selected");
+
     }
 
     event.target.classList.add("selected");
 
-    document.getElementById("playButton").disabled = false;
-
+    document.getElementById("startGame").disabled = false;
 }
 
 
-/* =========================
-   MULAI GAME
-========================= */
+/* ==================================================
+   MULAI
+================================================== */
 
-function startGame() {
+function startGame(){
 
-    positions = [];
-    scores = [];
+    posisi = [];
+    poin = [];
 
-    for (var i = 0; i < teamCount; i++) {
+    for(var i=0;i<jumlahKelompok;i++){
 
-        positions.push(0);
-        scores.push(0);
+        posisi.push(0);
+        poin.push(0);
 
     }
 
-    currentTeam = 0;
-    rolled = false;
-    questionNumber = 0;
+    kelompokSekarang = 0;
+
+    sudahDadu = false;
+
+    nomorPertanyaan = 0;
 
     showPage("game");
 
-    drawBoard();
-    drawScores();
+    gambarPapan();
 
-    document.getElementById("turnText").innerHTML =
-        icons[0] +
-        " TEAM 1の ばんです！";
+    gambarSkor();
 
-}
-
-
-/* =========================
-   PAPAN
-========================= */
-
-function getSpecial(number) {
-
-    if (number === 5 ||
-        number === 15 ||
-        number === 25) {
-
-        return "⭐ BONUS";
-
-    }
-
-    if (number === 10 ||
-        number === 20) {
-
-        return "🎁 LUCKY";
-
-    }
-
-    if (number === 13 ||
-        number === 23) {
-
-        return "⏪ BACK";
-
-    }
-
-    if (number === 18) {
-
-        return "🔄 AGAIN";
-
-    }
-
-    return "";
+    updateGiliran();
 
 }
 
 
-function drawBoard() {
+/* ==================================================
+   KOTAK KHUSUS
+================================================== */
+
+function kotakKhusus(n){
+
+    if(n===5 || n===15 || n===25){
+
+        return {
+            icon:"⭐",
+            label:"BONUS"
+        };
+
+    }
+
+    if(n===10 || n===20){
+
+        return {
+            icon:"🎁",
+            label:"LUCKY"
+        };
+
+    }
+
+    if(n===13 || n===23){
+
+        return {
+            icon:"⏪",
+            label:"BACK"
+        };
+
+    }
+
+    if(n===18){
+
+        return {
+            icon:"⚡",
+            label:"CHALLENGE"
+        };
+
+    }
+
+    return null;
+}
+
+
+/* ==================================================
+   GAMBAR PAPAN
+================================================== */
+
+function gambarPapan(){
 
     var board =
         document.getElementById("board");
@@ -950,7 +1222,7 @@ function drawBoard() {
     board.innerHTML = "";
 
 
-    for (var i = 0; i <= 30; i++) {
+    for(var n=0;n<=30;n++){
 
         var cell =
             document.createElement("div");
@@ -958,81 +1230,82 @@ function drawBoard() {
         cell.className = "cell";
 
 
-        if (i === 0) {
+        if(n===0){
 
             cell.classList.add("start");
 
             cell.innerHTML =
-                "<strong>START</strong><br>🚩";
+                '<strong>START</strong><br>🚩';
 
         }
 
-        else if (i === 30) {
+        else if(n===30){
 
             cell.classList.add("goal");
 
             cell.innerHTML =
-                "<strong>GOAL</strong><br>🏆";
+                '<strong>GOAL</strong><br>🏆';
 
         }
 
-        else {
+        else{
 
             var special =
-                getSpecial(i);
+                kotakKhusus(n);
 
-            if (special !== "") {
+            cell.innerHTML =
+                '<span class="cell-number">'+
+                n+
+                '</span>';
+
+            if(special){
 
                 cell.classList.add("special");
 
-                cell.innerHTML =
-                    '<span class="cell-number">' +
-                    i +
-                    '</span>' +
-                    '<span class="cell-icon">' +
-                    special +
-                    '</span>';
+                cell.innerHTML +=
+                    '<div style="font-size:24px">'+
+                    special.icon+
+                    '</div>'+
+                    '<div class="special-label">'+
+                    special.label+
+                    '</div>';
 
             }
 
-            else {
+            else{
 
-                cell.innerHTML =
-                    '<span class="cell-number">' +
-                    i +
-                    '</span>' +
-                    '<span class="cell-icon">🌸</span>';
+                cell.classList.add("normal");
 
             }
 
         }
 
 
-        var pawns =
+        var pawnBox =
             document.createElement("div");
 
-        pawns.className = "pawns";
+        pawnBox.className = "pawns";
 
 
-        for (var t = 0; t < teamCount; t++) {
+        for(var t=0;t<jumlahKelompok;t++){
 
-            if (positions[t] === i) {
+            if(posisi[t]===n){
 
                 var pawn =
                     document.createElement("span");
 
                 pawn.className = "pawn";
 
-                pawn.innerHTML =
-                    icons[t];
+                pawn.innerHTML = bidak[t];
 
-                pawns.appendChild(pawn);
+                pawnBox.appendChild(pawn);
 
             }
 
         }
 
-        cell.appendChild(pawns);
+
+        cell.appendChild(pawnBox);
 
         board.appendChild(cell);
 
@@ -1041,60 +1314,84 @@ function drawBoard() {
 }
 
 
-/* =========================
+/* ==================================================
    SKOR
-========================= */
+================================================== */
 
-function drawScores() {
+function gambarSkor(){
 
-    var box =
-        document.getElementById("scores");
+    var row =
+        document.getElementById("scoreRow");
 
-    box.innerHTML = "";
+    row.innerHTML = "";
 
 
-    for (var i = 0; i < teamCount; i++) {
+    for(var i=0;i<jumlahKelompok;i++){
 
-        var score =
+        var item =
             document.createElement("div");
 
-        score.className = "score";
+        item.className = "score-item";
 
-        score.innerHTML =
-            icons[i] +
-            " Team " +
-            (i + 1) +
-            ": " +
-            scores[i] +
-            " pt";
 
-        box.appendChild(score);
+        if(i===kelompokSekarang){
+
+            item.classList.add("active-team");
+
+        }
+
+
+        item.innerHTML =
+            bidak[i]+
+            " Kelompok "+
+            (i+1)+
+            " : "+
+            poin[i]+
+            " poin";
+
+
+        row.appendChild(item);
 
     }
 
 }
 
 
-/* =========================
+/* ==================================================
+   GILIRAN
+================================================== */
+
+function updateGiliran(){
+
+    document.getElementById("turn").innerHTML =
+        bidak[kelompokSekarang]+
+        " Kelompok "+
+        (kelompokSekarang+1)+
+        " mendapat giliran";
+
+}
+
+
+/* ==================================================
    DADU
-========================= */
+================================================== */
 
-function rollDice() {
+function rollDice(){
 
-    if (rolled) {
+    if(sudahDadu){
         return;
     }
 
-    rolled = true;
+    sudahDadu = true;
 
-    document.getElementById("diceButton").disabled = true;
-
-
-    var number =
-        Math.floor(Math.random() * 6) + 1;
+    document.getElementById("rollButton").disabled = true;
 
 
-    var faces = [
+    var angka =
+        Math.floor(Math.random()*6)+1;
+
+
+    var wajah = [
         "⚀",
         "⚁",
         "⚂",
@@ -1105,107 +1402,118 @@ function rollDice() {
 
 
     document.getElementById("diceFace").innerHTML =
-        faces[number - 1];
+        wajah[angka-1];
 
 
-    movePlayer(number);
+    gerakkanBidak(angka);
 
 }
 
 
-/* =========================
+/* ==================================================
    GERAK
-========================= */
+================================================== */
 
-function movePlayer(number) {
+function gerakkanBidak(angka){
 
-    positions[currentTeam] += number;
+    posisi[kelompokSekarang] += angka;
 
 
-    if (positions[currentTeam] > 30) {
+    if(posisi[kelompokSekarang]>30){
 
-        positions[currentTeam] = 30;
+        posisi[kelompokSekarang]=30;
 
     }
 
 
-    drawBoard();
+    gambarPapan();
 
 
-    if (positions[currentTeam] === 30) {
+    if(posisi[kelompokSekarang]===30){
 
-        scores[currentTeam] += 20;
+        poin[kelompokSekarang]+=20;
 
-        drawScores();
+        gambarSkor();
 
-        setTimeout(showWinner, 400);
+        setTimeout(function(){
+
+            tampilkanPemenang();
+
+        },500);
 
         return;
 
     }
 
 
-    setTimeout(showQuestion, 400);
+    setTimeout(function(){
+
+        tampilkanTantangan();
+
+    },400);
 
 }
 
 
-/* =========================
-   SOAL
-========================= */
+/* ==================================================
+   TANTANGAN
+================================================== */
 
-function showQuestion() {
+function tampilkanTantangan(){
 
     var q =
-        questions[questionNumber];
+        soal[nomorPertanyaan];
 
+    pertanyaanSekarang=q;
 
-    questionNumber++;
+    nomorPertanyaan++;
 
-    if (questionNumber >= questions.length) {
+    if(nomorPertanyaan>=soal.length){
 
-        questionNumber = 0;
+        nomorPertanyaan=0;
 
     }
 
 
     var box =
-        document.getElementById("questionBox");
+        document.getElementById("challenge");
 
 
     var html = "";
 
 
     html +=
-        '<div class="question-type">' +
-        q.type +
+        '<div class="challenge-type">'+
+        q.type+
         '</div>';
 
 
     html +=
-        '<div class="question-text">' +
-        q.text +
+        '<div class="challenge-title">'+
+        q.text+
         '</div>';
 
 
     html +=
-        '<div class="hiragana">' +
-        q.hira +
+        '<div class="big-hira">'+
+        q.display+
         '</div>';
 
 
     html +=
-        '<div class="answers">';
+        '<div class="choices">';
 
 
-    for (var i = 0; i < q.choices.length; i++) {
+    for(var i=0;i<q.choices.length;i++){
 
         html +=
-            '<button class="answer" ' +
-            'onclick="checkAnswer(this, \'' +
-            q.choices[i] +
-            '\')">' +
-            q.choices[i] +
+            '<button class="choice" '+
+            'onclick="jawab(this,\''+
+            escapeQuotes(q.choices[i])+
+            '\')">'+
+            String.fromCharCode(65+i)+
+            '. '+
+            q.choices[i]+
             '</button>';
 
     }
@@ -1213,194 +1521,361 @@ function showQuestion() {
 
     html += "</div>";
 
-    html +=
-        '<div id="result"></div>';
+    html += '<div id="feedback"></div>';
 
 
-    box.innerHTML = html;
-
-
-    window.currentQuestion = q;
+    box.innerHTML=html;
 
 }
 
 
-/* =========================
-   JAWAB
-========================= */
+/* ==================================================
+   ESCAPE
+================================================== */
 
-function checkAnswer(button, answer) {
+function escapeQuotes(text){
+
+    return text.replace(/'/g,"\\'");
+
+}
+
+
+/* ==================================================
+   JAWAB
+================================================== */
+
+function jawab(button,jawaban){
 
     var buttons =
-        document.querySelectorAll(".answer");
+        document.querySelectorAll(".choice");
 
 
-    for (var i = 0; i < buttons.length; i++) {
+    for(var i=0;i<buttons.length;i++){
 
-        buttons[i].disabled = true;
+        buttons[i].disabled=true;
 
     }
 
 
-    var result =
-        document.getElementById("result");
+    var benar =
+        jawaban === pertanyaanSekarang.answer;
 
 
-    if (answer === window.currentQuestion.answer) {
+    if(benar){
 
-        scores[currentTeam] += 10;
+        button.classList.add("correct");
+
+        poin[kelompokSekarang]+=10;
 
 
-        result.innerHTML =
-            '<div class="result">' +
-            '🎉 せいかい！<br>' +
-            '+10 point' +
-            '</div>' +
+        document.getElementById("feedback").innerHTML =
 
-            '<button class="next" onclick="nextTurn()">' +
-            '▶ つぎへ' +
+            '<div class="feedback">🎉 Benar!</div>'+
+            '<div class="answer-info">'+
+            'Jawaban: <b>'+
+            pertanyaanSekarang.answer+
+            '</b></div>'+
+            '<button class="next" onclick="selesaiTantangan()">'+
+            '▶ Kembali ke papan'+
             '</button>';
 
     }
 
-    else {
+    else{
 
-        result.innerHTML =
-            '<div class="result">' +
-            'ざんねん！' +
-            '</div>' +
+        button.classList.add("wrong");
 
-            '<p>' +
-            'Jawaban benar: <strong>' +
-            window.currentQuestion.answer +
-            '</strong>' +
-            '</p>' +
+        posisi[kelompokSekarang]--;
 
-            '<button class="next" onclick="nextTurn()">' +
-            '▶ つぎへ' +
+        if(posisi[kelompokSekarang]<0){
+
+            posisi[kelompokSekarang]=0;
+
+        }
+
+
+        document.getElementById("feedback").innerHTML =
+
+            '<div class="feedback">もういちど！</div>'+
+            '<div class="answer-info">'+
+            'Jawaban benar: <b>'+
+            pertanyaanSekarang.answer+
+            '</b></div>'+
+            '<div class="answer-info">'+
+            'Karena salah, bidak mundur 1 kotak.'+
+            '</div>'+
+            '<button class="next" onclick="selesaiTantangan()">'+
+            '▶ Kembali ke papan'+
             '</button>';
 
     }
 
 
-    drawScores();
+    gambarSkor();
 
 }
 
 
-/* =========================
-   GILIRAN BERIKUTNYA
-========================= */
+/* ==================================================
+   SELESAI TANTANGAN
+================================================== */
 
-function nextTurn() {
+function selesaiTantangan(){
 
     var special =
-        getSpecial(positions[currentTeam]);
+        kotakKhusus(posisi[kelompokSekarang]);
 
 
-    if (special === "⭐ BONUS") {
+    gambarPapan();
 
-        positions[currentTeam] += 2;
 
-        if (positions[currentTeam] > 30) {
-            positions[currentTeam] = 30;
-        }
+    if(special && special.label==="BONUS"){
 
-        drawBoard();
+        posisi[kelompokSekarang]+=2;
 
-        if (positions[currentTeam] === 30) {
+        if(posisi[kelompokSekarang]>30){
 
-            showWinner();
-
-            return;
+            posisi[kelompokSekarang]=30;
 
         }
 
-    }
+        gambarPapan();
 
 
-    if (special === "⏪ BACK") {
+        document.getElementById("challenge").innerHTML =
 
-        positions[currentTeam] -= 2;
-
-        if (positions[currentTeam] < 0) {
-            positions[currentTeam] = 0;
-        }
-
-        drawBoard();
-
-    }
-
-
-    if (special === "🎁 LUCKY" ||
-        special === "🔄 AGAIN") {
-
-        rolled = false;
-
-        document.getElementById("diceButton").disabled = false;
-
-        document.getElementById("questionBox").innerHTML =
-            "<div class='question-type'>SPECIAL</div>" +
-            "<div class='question-text'>" +
-            special +
-            "</div>" +
-            "<p>もういちど DADUを ふってください！</p>";
+            '<div class="challenge-type">⭐ BONUS</div>'+
+            '<div class="challenge-title">'+
+            'Bonus! Maju 2 kotak.'+
+            '</div>'+
+            '<button class="next" onclick="lanjutGiliran()">'+
+            '▶ Lanjut'+
+            '</button>';
 
         return;
 
     }
 
 
-    currentTeam++;
+    if(special && special.label==="BACK"){
 
-    if (currentTeam >= teamCount) {
+        posisi[kelompokSekarang]-=2;
 
-        currentTeam = 0;
+        if(posisi[kelompokSekarang]<0){
+
+            posisi[kelompokSekarang]=0;
+
+        }
+
+        gambarPapan();
+
+
+        document.getElementById("challenge").innerHTML =
+
+            '<div class="challenge-type">⏪ BACK</div>'+
+            '<div class="challenge-title">'+
+            'Mundur 2 kotak!'+
+            '</div>'+
+            '<button class="next" onclick="lanjutGiliran()">'+
+            '▶ Lanjut'+
+            '</button>';
+
+        return;
 
     }
 
 
-    rolled = false;
+    if(special && special.label==="LUCKY"){
 
-    document.getElementById("diceButton").disabled = false;
+        sudahDadu=false;
 
-    document.getElementById("diceFace").innerHTML = "🎲";
-
-
-    document.getElementById("turnText").innerHTML =
-        icons[currentTeam] +
-        " TEAM " +
-        (currentTeam + 1) +
-        "の ばんです！";
+        document.getElementById("rollButton").disabled=false;
 
 
-    document.getElementById("questionBox").innerHTML =
-        "<div class='question-type'>YOUR TURN</div>" +
-        "<div class='question-text'>" +
-        icons[currentTeam] +
-        " Team " +
-        (currentTeam + 1) +
-        "の ばんです！" +
-        "</div>" +
-        "<p>🎲 DADUを おしてください。</p>";
+        document.getElementById("challenge").innerHTML =
+
+            '<div class="challenge-type">🎁 LUCKY</div>'+
+            '<div class="challenge-title">'+
+            'Beruntung! Lempar dadu lagi.'+
+            '</div>';
+
+        return;
+
+    }
+
+
+    if(special && special.label==="CHALLENGE"){
+
+        document.getElementById("challenge").innerHTML =
+
+            '<div class="challenge-type">⚡ CHALLENGE</div>'+
+            '<div class="challenge-title">'+
+            'Tantangan cepat berikutnya!'+
+            '</div>'+
+            '<p>Klik lanjut untuk mendapatkan tantangan.</p>'+
+            '<button class="next" onclick="tampilkanTantanganLagi()">'+
+            '⚡ CHALLENGE'+
+            '</button>';
+
+        return;
+
+    }
+
+
+    lanjutGiliran();
 
 }
 
 
-/* =========================
+/* ==================================================
+   CHALLENGE KHUSUS
+================================================== */
+
+function tampilkanTantanganLagi(){
+
+    tampilkanTantangan();
+
+}
+
+
+/* ==================================================
+   GANTI GILIRAN
+================================================== */
+
+function lanjutGiliran(){
+
+    kelompokSekarang++;
+
+    if(kelompokSekarang>=jumlahKelompok){
+
+        kelompokSekarang=0;
+
+    }
+
+
+    sudahDadu=false;
+
+    document.getElementById("rollButton").disabled=false;
+
+    document.getElementById("diceFace").innerHTML="🎲";
+
+    gambarPapan();
+
+    gambarSkor();
+
+    updateGiliran();
+
+
+    document.getElementById("challenge").innerHTML =
+
+        '<div class="challenge-type">GILIRAN BERIKUTNYA</div>'+
+        '<div class="challenge-title">'+
+        bidak[kelompokSekarang]+
+        ' Kelompok '+
+        (kelompokSekarang+1)+
+        '</div>'+
+        '<p>Silakan lempar dadu.</p>';
+
+}
+
+
+/* ==================================================
    PEMENANG
-========================= */
+================================================== */
 
-function showWinner() {
+function tampilkanPemenang(){
 
-    document.getElementById("winnerName").innerHTML =
-        icons[currentTeam] +
-        " Team " +
-        (currentTeam + 1) +
-        "の かちです！";
+    var nama =
+        "Kelompok "+
+        (kelompokSekarang+1)+
+        " "+
+        bidak[kelompokSekarang];
 
 
-    showPage("winner");
+    document.getElementById("winnerText").innerHTML =
+
+        '<b style="font-size:30px">'+
+        nama+
+        '</b>'+
+        '<br>'+
+        '<span>menjadi kelompok pertama yang mencapai GOAL!</span>';
+
+
+    buatRekap();
+
+    showPage("summary");
+
+}
+
+
+/* ==================================================
+   REKAP
+================================================== */
+
+function buatRekap(){
+
+    var data=[];
+
+
+    for(var i=0;i<jumlahKelompok;i++){
+
+        data.push({
+            nomor:i,
+            poin:poin[i],
+            posisi:posisi[i]
+        });
+
+    }
+
+
+    data.sort(function(a,b){
+
+        if(b.posisi!==a.posisi){
+
+            return b.posisi-a.posisi;
+
+        }
+
+        return b.poin-a.poin;
+
+    });
+
+
+    var body =
+        document.getElementById("summaryBody");
+
+    body.innerHTML="";
+
+
+    for(var j=0;j<data.length;j++){
+
+        var d=data[j];
+
+
+        var row =
+            document.createElement("tr");
+
+
+        row.innerHTML =
+
+            "<td>"+(j+1)+"</td>"+
+            "<td>"+
+            bidak[d.nomor]+
+            " Kelompok "+
+            (d.nomor+1)+
+            "</td>"+
+            "<td>"+
+            d.poin+
+            "</td>"+
+            "<td>"+
+            d.posisi+
+            " / 30"+
+            "</td>";
+
+
+        body.appendChild(row);
+
+    }
 
 }
 
