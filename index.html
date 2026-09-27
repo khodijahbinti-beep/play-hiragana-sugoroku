@@ -121,7 +121,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
   <h1>🏆 Omedetou！</h1>
   <h2 id="winTeamText" style="color:var(--pink-deep);"></h2>
   <p style="font-size:1.3rem;color:var(--blue);font-weight:700;">HIRAGANA MASTER！</p>
-  <button class="btn-secondary" onclick="location.reload()">「Mou ichido asobu!」</button>
+  <button class="btn-secondary" onclick="soundClick();setTimeout(()=>location.reload(),150)">「Mou ichido asobu!」</button>
 </div>
 
 <div class="modal-bg" id="modalBg"><div class="modal" id="modalContent"></div></div>
@@ -192,7 +192,9 @@ function closeModalOnly(){ document.getElementById('modalBg').classList.remove('
 function beep(freq,duration=120,type='sine',vol=0.18,delay=0){
   try{
     const ctx = window.audioCtx || (window.audioCtx = new (window.AudioContext||window.webkitAudioContext)());
+    if(ctx.state==='suspended') ctx.resume();
     setTimeout(()=>{
+      if(ctx.state==='suspended') ctx.resume();
       const osc=ctx.createOscillator(), gain=ctx.createGain();
       osc.type=type; osc.frequency.value=freq; gain.gain.value=vol;
       osc.connect(gain); gain.connect(ctx.destination);
@@ -216,16 +218,17 @@ function soundCorrect(){ beep(784,110,'triangle',0.22); beep(988,110,'triangle',
 function soundWrong(){ beep(311,180,'sawtooth',0.18); beep(233,260,'sawtooth',0.18,150); }
 function soundClick(){ beep(700,55,'square',0.12); }
 
-/* ============ MUSIK LATAR (halaman awal & menunggu) ============ */
-let bgmInterval=null, bgmStep=0;
-const BGM_NOTES=[523,587,659,523,494,440,494,392,440,523,587,494];
+/* ============ MUSIK LATAR (halaman awal & menunggu) — nada pentatonik ala Jepang ============ */
+let bgmInterval=null, bgmStep=0, bgmOn=false;
+const BGM_NOTES=[523,587,659,784,880,784,659,880,784,659,587,659,523,587,659,587];
 function startBGM(){
-  if(bgmInterval) return;
-  bgmStep=0;
-  bgmInterval=setInterval(()=>{ beep(BGM_NOTES[bgmStep%BGM_NOTES.length],400,'sine',0.045); bgmStep++; },460);
+  if(bgmInterval) return; bgmOn=true; bgmStep=0;
+  bgmInterval=setInterval(()=>{ beep(BGM_NOTES[bgmStep%BGM_NOTES.length],300,'triangle',0.06); bgmStep++; },340);
 }
-function stopBGM(){ if(bgmInterval){ clearInterval(bgmInterval); bgmInterval=null; } }
-document.addEventListener('click', function firstClick(){ startBGM(); document.removeEventListener('click', firstClick); }, {once:true});
+function stopBGM(){ bgmOn=false; if(bgmInterval){ clearInterval(bgmInterval); bgmInterval=null; } }
+function ensureBGM(){ if(!bgmOn) startBGM(); }
+document.addEventListener('click', function firstClick(){ ensureBGM(); }, true);
+window.addEventListener('load', ()=>{ ensureBGM(); });
 
 /* ============ NAV ============ */
 function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
@@ -294,6 +297,7 @@ function placePieces(){
 
 /* ============ GAME START ============ */
 function startGame(){
+  soundClick(); stopBGM();
   buildBoardMeta();
   usedWords = new Set(); usedTebak = new Set();
   teams=[];
@@ -325,12 +329,12 @@ function rollDice(){
 }
 function movePiece(steps){
   const team=teams[currentTurn];
-  animateSteps(team, steps, ()=>{
-    setTimeout(()=>{
-      if(team.pos>=NUM_SQUARES){ endGame(team); return; }
-      resolveSquare(boardMeta[team.pos-1], team);
-    },200);
-  });
+  animateSteps(team, steps, ()=>{ setTimeout(()=>afterMove(team),200); });
+}
+function afterMove(team){
+  if(team.pos>=NUM_SQUARES){ endGame(team); return; }
+  if(team.pos<=0){ nextTurn(); return; }
+  resolveSquare(boardMeta[team.pos-1], team);
 }
 function animateSteps(team, delta, onDone){
   const dir = delta>=0 ? 1 : -1; let remaining=Math.abs(delta);
@@ -354,9 +358,9 @@ function bouncePiece(team){
 }
 function resolveSquare(sq, team){
   if(sq.type==='challenge'){ soundChallenge(); openChallenge(team); }
-  else if(sq.type==='bonus'){ soundBonus(); showSpecial(team,'⭐ BONUS! Maju 2 langkah!',()=>{ animateSteps(team,2,()=>nextTurn()); }); }
+  else if(sq.type==='bonus'){ soundBonus(); showSpecial(team,'⭐ BONUS! Maju 2 langkah!',()=>{ animateSteps(team,2,()=>{ setTimeout(()=>afterMove(team),150); }); }); }
   else if(sq.type==='kesempatan'){ soundKesempatan(); showSpecial(team,'🎁 KESEMPATAN! Lempar dadu sekali lagi!',()=>{document.getElementById('diceBtn').disabled=false;document.getElementById('diceResult').textContent='';}); }
-  else if(sq.type==='mundur'){ soundMundur(); showSpecial(team,'⏪ MUNDUR! Mundur 2 langkah!',()=>{ animateSteps(team,-2,()=>nextTurn()); }); }
+  else if(sq.type==='mundur'){ soundMundur(); showSpecial(team,'⏪ MUNDUR! Mundur 2 langkah!',()=>{ animateSteps(team,-2,()=>{ setTimeout(()=>afterMove(team),150); }); }); }
   else if(sq.type==='ulangi'){ soundUlangi(); showSpecial(team,'🔄 ULANGI! Main sekali lagi!',()=>{document.getElementById('diceBtn').disabled=false;document.getElementById('diceResult').textContent='';}); }
   else if(sq.type==='istirahat'){ soundIstirahat(); showSpecial(team,'😴 ISTIRAHAT! Lewati giliran berikutnya',()=>{team.skip=true;nextTurn();}); }
   else nextTurn();
@@ -364,7 +368,7 @@ function resolveSquare(sq, team){
 function showSpecial(team,text,after){
   document.getElementById('modalContent').innerHTML=`<div id="specialBanner">${text}</div><button class="btn-secondary" id="tsugiBtn">Tsugi!</button>`;
   document.getElementById('modalBg').classList.add('active');
-  document.getElementById('tsugiBtn').onclick=()=>{document.getElementById('modalBg').classList.remove('active');after();};
+  document.getElementById('tsugiBtn').onclick=()=>{soundClick();document.getElementById('modalBg').classList.remove('active');after();};
 }
 function nextTurn(){
   let tries=0;
@@ -457,7 +461,7 @@ function teacherGrade(correct){
   fb.style.color = correct ? '#3a8a3a' : '#a83a3a';
   document.getElementById('nextBtn').classList.remove('hidden');
 }
-function closeChallenge(){ document.getElementById('modalBg').classList.remove('active'); nextTurn(); }
+function closeChallenge(){ soundClick(); document.getElementById('modalBg').classList.remove('active'); nextTurn(); }
 
 /* ============ WIN ============ */
 function endGame(team){
