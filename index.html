@@ -438,10 +438,16 @@ function openChallenge(team){
   }
 }
 function speakWord(word){
-  if('speechSynthesis' in window){
+  if(!('speechSynthesis' in window)) return;
+  const say=()=>{
+    const voices = window.speechSynthesis.getVoices();
+    const jaVoice = voices.find(v=>v.lang && v.lang.toLowerCase().startsWith('ja'));
     const u=new SpeechSynthesisUtterance(word); u.lang='ja-JP'; u.rate=0.8;
+    if(jaVoice) u.voice=jaVoice;
     window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
-  }
+  };
+  if(window.speechSynthesis.getVoices().length===0){ window.speechSynthesis.onvoiceschanged=say; }
+  else say();
 }
 function checkAnswer(btn, chosen, correct){
   if(window.answered) return; window.answered=true; if(qTimer) clearInterval(qTimer);
