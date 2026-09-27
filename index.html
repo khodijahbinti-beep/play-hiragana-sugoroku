@@ -173,7 +173,9 @@ function showRules(){
     <div style="text-align:left;font-size:.95rem;line-height:1.6;max-height:60vh;overflow-y:auto;">
       <p><b>1. Pemain</b><br>Kelas dibagi menjadi 2–10 kelompok. Setiap kelompok punya bidak dengan warna/nomor sendiri.</p>
       <p><b>2. Cara Main</b><br>Tekan tombol <b>🎲 LEMPAR DADU</b> saat giliran kelompokmu. Bidak akan otomatis maju sesuai angka dadu, lalu giliran berpindah ke kelompok berikutnya.</p>
-      <p><b>3. Kotak Tantangan (❓)</b><br>Jika bidak berhenti di kotak ini, kelompok akan diberi 1 soal hiragana secara acak (Membaca Kata, Tebak Hiragana, Cocokkan, Dengarkan, atau Tulis), dengan waktu 60 detik. Jawaban benar mendapat <b>+10 poin</b>.</p>
+      <p><b>3. Kotak Tantangan (❓)</b><br>Jika bidak berhenti di kotak ini, kelompok akan diberi 1 soal hiragana secara acak (Membaca Kata, Tebak Hiragana, Cocokkan, Dengarkan, atau Tulis), dengan waktu 60 detik.<br>
+      • Jawaban <b>benar</b>: +10 poin, bidak tetap di posisinya.<br>
+      • Jawaban <b>salah</b> atau waktu habis: bidak <b>mundur 1 langkah</b> sebagai konsekuensi. Kotak yang didarat akibat mundur ini tidak memicu soal atau efek apa pun (aman, cuma pindah posisi).</p>
       <p><b>4. Kotak Khusus</b><br>
       ⭐ BONUS: maju 2 langkah<br>
       🎁 KESEMPATAN: lempar dadu sekali lagi<br>
@@ -388,7 +390,7 @@ function startTimer(onExpire){
 }
 function openChallenge(team){
   const type=rnd(['baca','tebak','cocok','dengar','tulis']);
-  const modal=document.getElementById('modalContent'); window.currentChallengeTeam=team; window.answered=false;
+  const modal=document.getElementById('modalContent'); window.currentChallengeTeam=team; window.answered=false; window.lastAnswerCorrect=null;
   let html='';
   if(type==='baca'){
     const item=pickWord();
@@ -430,7 +432,7 @@ function openChallenge(team){
   modal.innerHTML=html;
   document.getElementById('modalBg').classList.add('active');
   if(type!=='tulis'){
-    startTimer(()=>{ if(!window.answered){ window.answered=true; soundWrong(); document.getElementById('fb').textContent='Waktu habis! ⏱'; document.getElementById('fb').style.color='#a83a3a'; document.getElementById('nextBtn').classList.remove('hidden'); } });
+    startTimer(()=>{ if(!window.answered){ window.answered=true; window.lastAnswerCorrect=false; soundWrong(); document.getElementById('fb').textContent='Waktu habis! ⏱ (mundur 1 langkah)'; document.getElementById('fb').style.color='#a83a3a'; document.getElementById('nextBtn').classList.remove('hidden'); } });
   } else {
     startTimer(()=>{ if(document.getElementById('timerText')) document.getElementById('timerText').textContent='⏰ Waktu habis'; });
   }
@@ -443,25 +445,35 @@ function speakWord(word){
 }
 function checkAnswer(btn, chosen, correct){
   if(window.answered) return; window.answered=true; if(qTimer) clearInterval(qTimer);
-  const ok = chosen===correct;
+  const ok = chosen===correct; window.lastAnswerCorrect=ok;
   if(ok) soundCorrect(); else soundWrong();
   document.querySelectorAll('.opt-btn').forEach(b=>{ if(b.textContent===correct) b.classList.add('correct'); if(b===btn && !ok) b.classList.add('wrong'); });
   if(ok){ window.currentChallengeTeam.score+=10; renderHud(); }
   const fb=document.getElementById('fb');
-  fb.textContent = ok ? 'Seikai! 🎉 +10 poin' : `Zannen! ❌ Jawaban benar: ${correct}`;
+  fb.textContent = ok ? 'Seikai! 🎉 +10 poin' : `Zannen! ❌ Jawaban benar: ${correct} (mundur 1 langkah)`;
   fb.style.color = ok ? '#3a8a3a' : '#a83a3a';
   document.getElementById('nextBtn').classList.remove('hidden');
 }
 function teacherGrade(correct){
   if(window.answered) return; window.answered=true; if(qTimer) clearInterval(qTimer);
+  window.lastAnswerCorrect=correct;
   if(correct) soundCorrect(); else soundWrong();
   if(correct){ window.currentChallengeTeam.score+=10; renderHud(); }
   const fb=document.getElementById('fb');
-  fb.textContent = correct ? 'Seikai! 🎉 +10 poin (dinilai guru)' : 'Zannen! ❌ (dinilai guru)';
+  fb.textContent = correct ? 'Seikai! 🎉 +10 poin (dinilai guru)' : 'Zannen! ❌ (dinilai guru, mundur 1 langkah)';
   fb.style.color = correct ? '#3a8a3a' : '#a83a3a';
   document.getElementById('nextBtn').classList.remove('hidden');
 }
-function closeChallenge(){ soundClick(); document.getElementById('modalBg').classList.remove('active'); nextTurn(); }
+function closeChallenge(){
+  soundClick();
+  document.getElementById('modalBg').classList.remove('active');
+  const team = window.currentChallengeTeam;
+  if(window.lastAnswerCorrect===false && team){
+    animateSteps(team, -1, ()=>nextTurn());
+  } else {
+    nextTurn();
+  }
+}
 
 /* ============ WIN ============ */
 function endGame(team){
