@@ -89,6 +89,13 @@ button{font-family:inherit;cursor:pointer;border:none;}
   <p class="tagline">Ayo belajar hiragana lewat game!</p>
   <button class="btn-main" onclick="goToSetup()">▶ Sutaato</button>
   <button class="btn-secondary" onclick="showRules()">📖 Aturan Main</button>
+  <div style="margin-top:34px;font-size:.8rem;color:#8a7a6a;line-height:1.6;">
+    Dibuat oleh:<br>
+    <b style="color:#5a4a3a;">Tim P4 Universitas Brawijaya</b><br>
+    Pendidikan Bahasa Jepang – SMAN 1 Batu<br>
+    Khodijah Binti Farouq Muallim<br>
+    Bramantyo Bayu Pradipto
+  </div>
 </div>
 
 <div id="setupScreen" class="screen">
@@ -119,7 +126,7 @@ button{font-family:inherit;cursor:pointer;border:none;}
 
 <div id="winScreen" class="screen">
   <h1>🏆 Omedetou！</h1>
-  <h2 id="winTeamText" style="color:var(--pink-deep);"></h2>
+  <div id="rankingList" style="max-width:420px;width:100%;margin:10px 0;"></div>
   <p style="font-size:1.3rem;color:var(--blue);font-weight:700;">HIRAGANA MASTER！</p>
   <button class="btn-secondary" onclick="soundClick();setTimeout(()=>location.reload(),150)">「Mou ichido asobu!」</button>
 </div>
@@ -158,7 +165,7 @@ function pickTebak(){
 
 const NUM_SQUARES = 24;
 const COLS = 6;
-let teams = [], currentTurn = 0, numGroups = 0, boardMeta = [];
+let teams = [], currentTurn = 0, numGroups = 0, boardMeta = [], finishOrder = [];
 const TEAM_COLORS = ['#e88ca0','#4a7ba6','#d9a441','#5aa85a','#9a6bb0','#c96b3a','#3aa3a3','#b0507a','#7a8c3a','#5a5aa8'];
 const DECOR = ['🌸','☁️','⛩️','🗻','🌞','🍡'];
 /* Hanya sedikit kotak khusus, sisanya (mayoritas) adalah kotak soal (challenge) */
@@ -182,7 +189,7 @@ function showRules(){
       ⏪ MUNDUR: mundur 2 langkah<br>
       🔄 ULANGI: main sekali lagi<br>
       😴 ISTIRAHAT: giliran berikutnya kelompok ini dilewati</p>
-      <p><b>5. Menang</b><br>Kelompok pertama yang mencapai kotak GOAL adalah pemenangnya, tidak peduli skor poinnya. Skor poin hanya untuk melihat siapa yang paling jago menjawab soal hiragana selama permainan.</p>
+      <p><b>5. Menang & Peringkat</b><br>Kelompok yang lebih dulu mencapai GOAL jadi <b>Juara 1</b>, tapi permainan <b>tidak langsung berhenti</b> — kelompok lain tetap lanjut main sampai gilirannya masing-masing sampai GOAL juga, supaya terbentuk peringkat lengkap (Juara 1, 2, 3, dst). Permainan baru benar-benar selesai setelah <b>semua kelompok</b> sampai GOAL.</p>
       <p><b>6. Tombol "Tsugi!"</b><br>Selalu tekan tombol ini setelah selesai membaca hasil kotak khusus atau soal, untuk lanjut ke giliran berikutnya.</p>
     </div>
     <button class="btn-secondary" onclick="closeModalOnly()">Tsugi!</button>`;
@@ -301,17 +308,17 @@ function placePieces(){
 function startGame(){
   soundClick(); stopBGM();
   buildBoardMeta();
-  usedWords = new Set(); usedTebak = new Set();
+  usedWords = new Set(); usedTebak = new Set(); finishOrder = [];
   teams=[];
-  for(let i=0;i<numGroups;i++) teams.push({id:i,name:'Tim '+(i+1),pos:0,score:0,color:TEAM_COLORS[i%TEAM_COLORS.length],skip:false});
+  for(let i=0;i<numGroups;i++) teams.push({id:i,name:'Tim '+(i+1),pos:0,score:0,color:TEAM_COLORS[i%TEAM_COLORS.length],skip:false,finished:false,rank:null});
   currentTurn=0;
   showScreen('gameScreen'); renderBoard(); renderHud(); placePieces(); updateTurnBanner();
 }
 function renderHud(){
   const hud=document.getElementById('hud'); hud.innerHTML='';
   teams.forEach((t,i)=>{
-    const card=document.createElement('div'); card.className='score-card'+(i===currentTurn?' active':''); card.id='score-'+i;
-    card.innerHTML=`<span style="color:${t.color};font-weight:900;">●</span> ${t.name.toUpperCase()}: ${t.score} POIN`;
+    const card=document.createElement('div'); card.className='score-card'+(i===currentTurn && !t.finished?' active':''); card.id='score-'+i;
+    card.innerHTML=`<span style="color:${t.color};font-weight:900;">●</span> ${t.name.toUpperCase()}: ${t.score} POIN ${t.finished?('🏁 #'+t.rank):''}`;
     hud.appendChild(card);
   });
 }
@@ -334,7 +341,7 @@ function movePiece(steps){
   animateSteps(team, steps, ()=>{ setTimeout(()=>afterMove(team),200); });
 }
 function afterMove(team){
-  if(team.pos>=NUM_SQUARES){ endGame(team); return; }
+  if(team.pos>=NUM_SQUARES){ finishTeam(team); return; }
   if(team.pos<=0){ nextTurn(); return; }
   resolveSquare(boardMeta[team.pos-1], team);
 }
@@ -374,7 +381,12 @@ function showSpecial(team,text,after){
 }
 function nextTurn(){
   let tries=0;
-  do{ currentTurn=(currentTurn+1)%teams.length; tries++; }while(teams[currentTurn].skip && (teams[currentTurn].skip=false) && tries<teams.length+1);
+  do{
+    currentTurn=(currentTurn+1)%teams.length; tries++;
+    if(teams[currentTurn].finished) continue;
+    if(teams[currentTurn].skip){ teams[currentTurn].skip=false; continue; }
+    break;
+  } while(tries<teams.length*2);
   renderHud(); updateTurnBanner();
   document.getElementById('diceBtn').disabled=false; document.getElementById('diceResult').textContent='';
 }
@@ -481,10 +493,23 @@ function closeChallenge(){
   }
 }
 
-/* ============ WIN ============ */
-function endGame(team){
+/* ============ FINISH & RANKING ============ */
+function finishTeam(team){
+  if(team.finished) return;
+  team.finished=true; finishOrder.push(team); team.rank=finishOrder.length;
+  placePieces();
+  if(finishOrder.length>=teams.length){ soundWin(); showFinalResults(); return; }
   soundWin();
-  document.getElementById('winTeamText').textContent = `「${team.name} no kachi desu!」`;
+  showSpecial(team, `🏁 ${team.name} sampai GOAL! Peringkat ke-${team.rank}`, ()=>{ nextTurn(); });
+}
+function showFinalResults(){
+  const rows = finishOrder.map((t,i)=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;margin:6px 0;border-radius:10px;background:#fff;border:2px solid var(--line);">
+      <span style="font-weight:800;color:var(--pink-deep);">#${i+1} ${t.name}</span>
+      <span style="font-weight:700;color:${t.color};">${t.score} POIN</span>
+    </div>`).join('');
+  document.getElementById('rankingList').innerHTML =
+    `<h2 style="color:var(--pink-deep);margin-bottom:4px;">「${finishOrder[0].name} no kachi desu!」</h2>${rows}`;
   showScreen('winScreen');
 }
 </script>
